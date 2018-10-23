@@ -99,7 +99,8 @@ exports.sendEmailToMember = function (req, res) {
 	var result;
 	member.findOne({ Email: email }, function (err, data) {
         if (err) {
-            res.status(500).send('Internal server error - while finding member by email');
+            //res.status(500).send('Internal server error - while finding member by email');
+			res.send('server error - while finding member by email');
         }
 		else if (!data)
 			res.send('Email not found');
@@ -121,7 +122,8 @@ exports.sendEmailToMember = function (req, res) {
 			}
 			smtpTransport.sendMail(mailOptions, function (error, response) {
                 if (error) {
-					res.status(500).send('Error while sendEmail');
+					//res.status(500).send('Error while sendEmail');
+					res.send('server error - Error while sendEmail');
 				}
 				else if (response) {
 					var dt = dateTime.create(moment());
@@ -132,7 +134,8 @@ exports.sendEmailToMember = function (req, res) {
 					new_otp.OTP = otp;
 					new_otp.save(function (err, data) {
                         if (err) {
-                            res.status(500).send('Error while save OTP');
+                            //res.status(500).send('Error while save OTP');
+							res.send('server error - Error while save OTP');
                         }
 						res.send(result);
 					});
