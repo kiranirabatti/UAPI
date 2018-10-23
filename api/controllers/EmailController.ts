@@ -121,7 +121,7 @@ exports.sendEmailToMember = function (req, res) {
 			}
 			smtpTransport.sendMail(mailOptions, function (error, response) {
                 if (error) {
-					res.status(500).send('Internal server error');
+					res.status(500).send('Error while sendEmail');
 				}
 				else if (response) {
 					var dt = dateTime.create(moment());
@@ -132,7 +132,7 @@ exports.sendEmailToMember = function (req, res) {
 					new_otp.OTP = otp;
 					new_otp.save(function (err, data) {
                         if (err) {
-                            res.status(500).send('Internal server error');
+                            res.status(500).send('Error while save OTP');
                         }
 						res.send(result);
 					});
