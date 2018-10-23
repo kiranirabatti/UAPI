@@ -99,7 +99,7 @@ exports.sendEmailToMember = function (req, res) {
 	var result;
 	member.findOne({ Email: email }, function (err, data) {
         if (err) {
-            res.status(500).send('Internal server error');
+            res.status(500).send('Internal server error' + err);
         }
 		else if (!data)
 			res.send('Email not found');
