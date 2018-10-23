@@ -23,7 +23,7 @@ exports.sendEmail = function (req, res) {
 				host: "smtp.gmail.com",
 				auth: {
 					user: "scriptshubtechnologies@gmail.com",
-					pass: "Test@4321"
+					pass: "ScriptsHub@4321"
 				}
 			});
 			var mailOptions = {
@@ -111,7 +111,7 @@ exports.sendEmailToMember = function (req, res) {
 				host: "smtp.gmail.com",
 				auth: {
 					user: "scriptshubtechnologies@gmail.com",
-					pass: "Test@4321"
+					pass: "ScriptsHub@4321"
 				}
 			});
 			var mailOptions = {
