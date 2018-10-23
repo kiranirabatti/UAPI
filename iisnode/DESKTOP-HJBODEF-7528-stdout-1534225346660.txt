@@ -1,0 +1,12 @@
+UGPS Node API server started on: \\.\pipe\714ca1fc-8aa1-4f22-b63d-1dd706cb8ba8
+{ EventName: 'diwali',
+  EventDescription: '<p>Within the various uses of the word today, &quot;nature&quot; often refers to geology and&nbsp;<a href="https://en.wikipedia.org/wiki/Wildlife">wildlife</a>. Nature can refer to the general realm of living plants and animals, and in some cases to the processes associated with inanimate objects&ndash;the way that particular types of things exist and change of their own accord, such as the weather and geology of the&nbsp;<a href="https://en.wikipedia.org/wiki/Earth">Earth</a>. It is often taken to mean the &quot;<a href="https://en.wikipedia.org/wiki/Natural_environment">natural environment</a>&quot; or&nbsp;<a href="https://en.wikipedia.org/wiki/Wilderness">wilderness</a>&ndash;wild animals, rocks, forest, and in general those things that have not been substantially altered by human intervention, or which persist despite human intervention. For example, manufactured objects and human interaction generally are not considered part of nature, unless qualified as, for example, &quot;human nature&quot; or &quot;the whole of nature&quot;. This more traditional concept of natural things which can still be found today implies a distinction between the natural and the artificial, with the artificial being understood as that which has been brought into being by a human&nbsp;<a href="https://en.wikipedia.org/wiki/Consciousness">consciousness</a>&nbsp;or a human&nbsp;<a href="https://en.wikipedia.org/wiki/Mind">mind</a>. Depending on the particular context, the term &quot;natural&quot; might also be distinguished from the&nbsp;<a href="https://en.wiktionary.org/wiki/unnatural">unnatural</a>&nbsp;or the&nbsp;<a href="https://en.wikipedia.org/wiki/Supernatural">supernatural</a>.</p>\r\n',
+  EventDate: '16-08-2018',
+  EventVenue: 'Gujarat ',
+  IsActive: 'true',
+  IsPublished: 'false',
+  EventId: '' }
+null
+null
+null
+null

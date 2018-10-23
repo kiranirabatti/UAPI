@@ -1,0 +1,15 @@
+UGPS Node API server started on: \\.\pipe\e86e6dac-fa0c-4a66-837a-967391ae34e7
+{ EventName: 'diwali',
+  EventDescription: '<p>aaa</p>\r\n',
+  EventDate: '08-08-2018',
+  EventVenue: 'pune',
+  IsActive: 'true',
+  IsPublished: 'false',
+  EventId: '' }
+null
+null
+null
+null
+null
+null
+null
