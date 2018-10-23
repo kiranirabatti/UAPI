@@ -33,7 +33,7 @@ exports.sendEmail = function (req, res) {
 			}
 			smtpTransport.sendMail(mailOptions, function (error, response) {
 				if (error) {
-					res.status(500).send('Internal server error');
+					res.status(500).send('Internal server error' + error);
 				}
 				else if (response) {
 					var dt = dateTime.create(moment());
