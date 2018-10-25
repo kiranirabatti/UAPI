@@ -18,5 +18,4 @@ eventPhotoSchema.plugin(autoIncrement.plugin, {
     model: 'EventPhotos', field: 'EventPhotoId', startAt: 1,
     incrementBy: 1
 });
-
 module.exports = mongoose.model('EventPhotos', eventPhotoSchema);

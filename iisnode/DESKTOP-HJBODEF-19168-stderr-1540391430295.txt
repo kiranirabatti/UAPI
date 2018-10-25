@@ -1,0 +1,17 @@
+TypeError: Cannot read property '0' of undefined
+    at exports.uploadEventPhotos (D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\EventManagementController.js:49:83)
+    at Layer.handle [as handle_request] (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\route.js:137:13)
+    at Route.dispatch (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\route.js:112:3)
+    at Layer.handle [as handle_request] (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\layer.js:95:5)
+    at D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:281:22
+    at param (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:354:14)
+    at param (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:365:14)
+    at Function.process_params (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:410:3)
+    at next (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:275:10)
+    at D:\TFS\UGPS\UGPS.NodeAPI\api\routes\Routes.js:33:21
+    at Object.module.exports [as verify] (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\jsonwebtoken\verify.js:180:10)
+    at D:\TFS\UGPS\UGPS.NodeAPI\api\routes\Routes.js:28:21
+    at Layer.handle [as handle_request] (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:317:13)
+    at D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\router\index.js:284:7

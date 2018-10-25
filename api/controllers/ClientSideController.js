@@ -120,7 +120,7 @@ exports.getMemberbyId = function (req, res) {
 };
 exports.updateMemberProfile = function (req, res) {
     var date = new Date, GUID = randomNum.randomBytes(16).toString("hex"), extension = req.body.FileName.slice((req.body.FileName.lastIndexOf(".") - 1 >>> 0) + 2), flag = false;
-    if (req.body.Image.startsWith(config.nodeURL + '/getStaticImage')) {
+    if (req.body.Image.startsWith(config.nodeURL + '/getDefaultMemberImage')) {
         flag = true;
     }
     req.body.UpdatedOn = date;
@@ -156,6 +156,9 @@ exports.updateMemberProfile = function (req, res) {
         }
     });
 };
+exports.getDefaultMemberImage = function (req, res) {
+    res.sendFile(path.resolve('./Photos/profile-picture.png'));
+};
 exports.getFamilyMemberbyMemberId = function (req, res) {
     familyMember.find({ MemberId: req.params.MemberId }, function (err, member) {
         if (err)
@@ -177,12 +180,45 @@ exports.getFamilyMemberImage = function (req, res) {
     }
 };
 exports.updateFamilyMemberProfile = function (req, res) {
-    var date = new Date, flag = false;
+    var date = new Date, GUID = randomNum.randomBytes(16).toString("hex"), extension = req.body.Filename.slice((req.body.Filename.lastIndexOf(".") - 1 >>> 0) + 2), flag = false;
+    if (req.body.Image.startsWith(config.nodeURL + '/getDefaultMemberImage')) {
+        flag = true;
+    }
     req.body.UpdatedOn = date;
+    if (!flag) {
+        req.body.FileNameInFolder = GUID + '.' + extension;
+    }
+    else {
+        req.body.FileNameInFolder = req.body.OldFileName;
+    }
     familyMember.findOneAndUpdate({ FamilyMemberId: req.params.familyMemberId }, req.body, { new: true }, function (err, member) {
         if (err)
             res.send(err);
         res.json(member);
+        if (req.body.Image) {
+            if (!flag) {
+                var familyMemberDir = ('./Photos/FamilyMembers');
+                if (!fs.existsSync(familyMemberDir)) {
+                    fs.mkdirSync(familyMemberDir);
+                }
+                var dir = (familyMemberDir + '/' + req.body.MemberId);
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+                var newDir = (dir + '/' + req.body.FamilyMemberId);
+                if (!fs.existsSync(newDir)) {
+                    fs.mkdirSync(newDir);
+                }
+                var FilePath = newDir + '/' + req.body.OldFileName;
+                if (fs.existsSync(FilePath) && req.body.OldFileName) {
+                    fs.unlinkSync(FilePath);
+                }
+                var base64Data = req.body.Image.replace(/^data:image\/\w+;base64,/, "");
+                fs.writeFile((newDir + "/" + GUID + '.' + extension), base64Data, 'base64', function (err) {
+                    console.log(err);
+                });
+            }
+        }
     });
 };
 exports.getStaticImage = function (req, res) {

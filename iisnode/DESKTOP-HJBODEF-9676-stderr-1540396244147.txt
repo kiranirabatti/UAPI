@@ -1,0 +1,18 @@
+Application has thrown an uncaught exception and is terminated:
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at validateHeader (_http_outgoing.js:503:11)
+    at ServerResponse.setHeader (_http_outgoing.js:510:3)
+    at ServerResponse.header (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\response.js:767:10)
+    at ServerResponse.json (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\express\lib\response.js:264:10)
+    at D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\LoginController.js:121:13
+    at D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongoose\lib\model.js:4233:16
+    at cb (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongoose\lib\query.js:1365:14)
+    at err (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\utils.js:415:14)
+    at executeCallback (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\utils.js:404:25)
+    at handleCallback (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\utils.js:128:55)
+    at self._endSession.self._endSession (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\cursor.js:900:36)
+    at ClientSession.endSession (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb-core\lib\sessions.js:72:41)
+    at Cursor._endSession (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb-core\lib\cursor.js:185:13)
+    at Cursor._endSession (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\cursor.js:217:59)
+    at D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb\lib\cursor.js:900:18
+    at nextFunction (D:\TFS\UGPS\UGPS.NodeAPI\node_modules\mongodb-core\lib\cursor.js:599:18)

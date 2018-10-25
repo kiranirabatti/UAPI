@@ -14,9 +14,10 @@ exports.sendEmail = function (req, res) {
             var smtpTransport = nodemailer.createTransport({
                 service: "gmail",
                 host: "smtp.gmail.com",
+                port: 587,
                 auth: {
                     user: "scriptshubtechnologies@gmail.com",
-                    pass: "Test@4321"
+                    pass: "ScriptsHub@4321"
                 }
             });
             var mailOptions = {
@@ -97,9 +98,10 @@ exports.sendEmailToMember = function (req, res) {
             var smtpTransport = nodemailer.createTransport({
                 service: "gmail",
                 host: "smtp.gmail.com",
+                port: 587,
                 auth: {
                     user: "scriptshubtechnologies@gmail.com",
-                    pass: "Test@4321"
+                    pass: "ScriptsHub@4321"
                 }
             });
             var mailOptions = {
@@ -109,7 +111,7 @@ exports.sendEmailToMember = function (req, res) {
             };
             smtpTransport.sendMail(mailOptions, function (error, response) {
                 if (error) {
-                    res.status(500).send('Internal server error');
+                    res.status(500).send('Error while sending email' + error);
                 }
                 else if (response) {
                     var dt = dateTime.create(moment());

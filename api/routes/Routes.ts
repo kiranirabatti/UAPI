@@ -26,7 +26,8 @@ module.exports = function (app) {
             req.url.startsWith('/getAllHeights') || req.url.startsWith('/committeeMember') || req.url.startsWith('/searchCommitteeMember') || req.url.startsWith('/getLogo')
             || req.url.startsWith('/getGirlImage') || req.url.startsWith('/defaultEventImage') || req.url.startsWith('/adminLogo') || req.url.startsWith('/validateMember')
             || req.url.startsWith('/getfamilymembers') || req.url.startsWith('/familyMemberById') || req.url.startsWith('/bannerWithPhotos') || req.url.startsWith('/bannerphoto')
-            || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage') || req.url.startsWith('/totalEventImage') 
+            || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage')
+            || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage')
 		) {
 			next();
 		}
@@ -299,6 +300,9 @@ module.exports = function (app) {
     app.route('/familyMemberById/:familyMemberId')
         .get(clientSideController.getFamilyMemberbyId)
         .put(clientSideController.updateFamilyMemberProfile)
+
+    app.route('/getDefaultMemberImage')
+        .get(clientSideController.getDefaultMemberImage)
 
     app.route('/searchMember/:fieldname/:searchvalue')
         .get(clientSideController.searchMember)

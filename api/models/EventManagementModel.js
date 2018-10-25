@@ -8,7 +8,6 @@ var eventSchema = new Schema({
     EventDescription: { type: String, default: '' },
     EventDate: { type: String, default: '' },
     EventVenue: { type: String, default: '' },
-    IsPublished: { type: Boolean, default: false },
     IsActive: { type: Boolean, deafult: true },
     CreatedOn: { type: Date, default: Date.now },
     CreatedBy: { type: String, default: '' },

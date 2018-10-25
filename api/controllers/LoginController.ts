@@ -7,7 +7,7 @@ path = require('path'),
 fs = require('fs'); 
 
 exports.userLogin = function (req, res) {
-    var email = req.params.emailId;
+    var email = new RegExp("^" + req.params.emailId + "$", "i");
     var password = req.params.password;
     user.findOne({ UserEmailId: email }, function (err, user) {
         if (user) {

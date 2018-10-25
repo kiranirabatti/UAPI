@@ -79,12 +79,12 @@ exports.getAdvertisementById = function (req, res) {
     });
 };
 exports.updateAdvertisement = function (req, res) {
-    var date = new Date, GUID = number.randomBytes(16).toString("hex"), extension, newPhoto, isPhotos = false;
+    var date = new Date, GUID = number.randomBytes(16).toString("hex"), extension, newPhoto, isPhotos = true;
     if (req.body.NoOfFiles == 0) {
-        isPhotos = true;
+        isPhotos = false;
     }
     req.body.UpdatedOn = date;
-    if (!isPhotos) {
+    if (isPhotos) {
         extension = req.body.FileName.slice((req.body.FileName.lastIndexOf(".") - 1 >>> 0) + 2);
         req.body.FileNameInFolder = GUID + '.' + extension;
     }
@@ -104,7 +104,7 @@ exports.updateAdvertisement = function (req, res) {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
-    if (!isPhotos && req.body.AdvertisementLocation == 3 && req.body.IsNewVisitingCard == 'false') {
+    if (isPhotos && req.body.AdvertisementLocation == 3 && req.body.IsNewVisitingCard == 'false') {
         req.body.FilePath = './Photos/Advertisement/' + req.params.AdvertisementId + '/' + GUID + '.' + extension;
         advertisementPhoto.findOneAndUpdate({ AdvertisementPhotoId: req.body.AdvertisementPhotoId }, req.body, { new: true }, function (err, data) {
             if (err)
@@ -119,7 +119,7 @@ exports.updateAdvertisement = function (req, res) {
             console.log(err);
         });
     }
-    else if (!isPhotos) {
+    else if (isPhotos) {
         if (req.body.NoOfFiles == 1) {
             GUID = number.randomBytes(16).toString("hex");
             extension = req.body.FileName.slice((req.body.FileName.lastIndexOf(".") - 1 >>> 0) + 2);
@@ -159,8 +159,8 @@ exports.updateAdvertisement = function (req, res) {
             }
         }
     }
-    else if (req.body.AdvertisementLocation != 3 && isPhotos) {
-        advertisementPhoto.updateMany({ AdvertisementId: req.params.AdvertisementId }, { $set: { AdvertisementLocation: req.body.AdvertisementLocation } }, { new: true }, function (err, data) {
+    else if (req.body.AdvertisementLocation != 3 && !isPhotos && req.body.OldAdvertisementLocation != 3) {
+        advertisementPhoto.updateMany({ AdvertisementId: req.params.AdvertisementId, AdvertisementLocation: req.body.OldAdvertisementLocation }, { $set: { AdvertisementLocation: req.body.AdvertisementLocation } }, { new: true }, function (err, data) {
             if (err)
                 res.send(err);
         });

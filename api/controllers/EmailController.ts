@@ -13,14 +13,15 @@ exports.sendEmail = function (req, res) {
 	var new_otp = new otpAuthentication();
     familyMember.findOne({ Email: email, LookingForPartner: 'Yes' }, function (err, data) {
 		if (err)
-			res.status(500).send('Internal server error');
+            res.status(500).send('Internal server error');
 		else if (!data)
 			res.send('User not found');
 		else {
 			const token = otplib.authenticator.generate(config.secret);
 			var smtpTransport = nodemailer.createTransport({
 				service: "gmail",
-				host: "smtp.gmail.com",
+                host: "smtp.gmail.com",
+                port: 587,
 				auth: {
 					user: "scriptshubtechnologies@gmail.com",
 					pass: "ScriptsHub@4321"
@@ -33,7 +34,7 @@ exports.sendEmail = function (req, res) {
 			}
 			smtpTransport.sendMail(mailOptions, function (error, response) {
 				if (error) {
-					res.status(500).send('Internal server error' + error);
+					res.status(500).send('Internal server error');
 				}
 				else if (response) {
 					var dt = dateTime.create(moment());
@@ -99,8 +100,7 @@ exports.sendEmailToMember = function (req, res) {
 	var result;
 	member.findOne({ Email: email }, function (err, data) {
         if (err) {
-            //res.status(500).send('Internal server error - while finding member by email');
-			res.send('server error - while finding member by email');
+            res.status(500).send('Internal server error');
         }
 		else if (!data)
 			res.send('Email not found');
@@ -109,7 +109,8 @@ exports.sendEmailToMember = function (req, res) {
 			const otp = otplib.authenticator.generate(config.secret);
 			var smtpTransport = nodemailer.createTransport({
 				service: "gmail",
-				host: "smtp.gmail.com",
+                host: "smtp.gmail.com",
+                port: 587,
 				auth: {
 					user: "scriptshubtechnologies@gmail.com",
 					pass: "ScriptsHub@4321"
@@ -122,8 +123,7 @@ exports.sendEmailToMember = function (req, res) {
 			}
 			smtpTransport.sendMail(mailOptions, function (error, response) {
                 if (error) {
-					//res.status(500).send('Error while sendEmail');
-					res.send('server error - Error while sendEmail');
+					res.status(500).send('Error while sending email'+error);
 				}
 				else if (response) {
 					var dt = dateTime.create(moment());
@@ -134,8 +134,7 @@ exports.sendEmailToMember = function (req, res) {
 					new_otp.OTP = otp;
 					new_otp.save(function (err, data) {
                         if (err) {
-                            //res.status(500).send('Error while save OTP');
-							res.send('server error - Error while save OTP');
+                            res.status(500).send('Internal server error');
                         }
 						res.send(result);
 					});
