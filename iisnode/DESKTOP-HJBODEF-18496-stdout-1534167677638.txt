@@ -1,1 +1,0 @@
-UGPS Node API server started on: \\.\pipe\d890a349-2c4c-4bdc-9561-198547a0a900

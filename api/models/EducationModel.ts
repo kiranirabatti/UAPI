@@ -37,14 +37,6 @@ education.find({}, function(err, data) {
             }
         });
     }
-    else if (data) {
-        education.collection.remove({});
-        education.collection.insert(educationArray, function(err, docs) {
-            if (err) {
-                return console.error(err);
-            }
-        });
-    }
 })
 
 module.exports = mongoose.model('Education', EducationSchema);

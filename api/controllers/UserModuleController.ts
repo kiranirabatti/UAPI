@@ -47,3 +47,11 @@ exports.getUserModulesById = function (req, res) {
         res.json(data);
     });
 };
+
+exports.CheckPermissionOfModules = function (req, res) {
+    userModule.find({ SystemUserId: req.params.SystemUserId, SecurityModuleId: req.params.SecurityModuleId }, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
+};

@@ -16,17 +16,24 @@ var SecurityModuleArray = [
     { SecurityModuleId: 1, SecurityModuleName: "Member and Family Member", Description: "member" },
     { SecurityModuleId: 2, SecurityModuleName: "Committee Member", Description: "committee members" },
     { SecurityModuleId: 3, SecurityModuleName: "Event", Description: "Events" },
-    { SecurityModuleId: 4, SecurityModuleName: "Advertisement", Description: "Advertisements" }
+    { SecurityModuleId: 4, SecurityModuleName: "Advertisement", Description: "Advertisements" },
+    { SecurityModuleId: 5, SecurityModuleName: "Banner", Description: "Banner" }
 ];
 
-SecurityModule.find({}, function (err, data) {
+SecurityModule.find({}, function(err, data) {
     if (err)
         return console.error(err);
     if (data == '') {
-        SecurityModule.collection.insert(SecurityModuleArray, function (err, docs) {
+        SecurityModule.collection.insert(SecurityModuleArray, function(err, docs) {
             if (err) {
                 return console.error(err);
             }
+        });
+    }
+    else if (data.length == 4) {
+        var myobj = { SecurityModuleId: 5, SecurityModuleName: "Banner", Description: "Banner" }
+        SecurityModule.collection.insertOne(myobj, function(err, res) {
+            if (err) throw err;
         });
     }
 })

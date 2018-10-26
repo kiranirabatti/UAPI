@@ -1,8 +1,0 @@
-UGPS Node API server started on: \\.\pipe\2652a73e-e66e-4874-922c-dcf4ed37ae23
-{ EventName: 'polo jungle and ambaji tour ',
-  EventDescription: '<p>yu</p>\r\n',
-  EventDate: '23-08-2018',
-  EventVenue: 'Gujarat ',
-  IsActive: 'true',
-  IsPublished: 'false',
-  EventId: '' }

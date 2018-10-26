@@ -18,7 +18,7 @@ exports.userLogin = function (req, res) {
                     throw err;
                 if (isMatch) {
                     var token = jwt.sign(data, config.secret, { expiresIn: 84600 });
-                    res.json({ token: token, FirstName: user.FirstName, LastName: user.LastName, IsActive: user.IsActive, UserId: user.UserId });
+                    res.json({ token: token, FirstName: user.FirstName, LastName: user.LastName, IsActive: user.IsActive, UserId: user.UserId, IsSuperAdmin: user.IsSuperAdmin });
                 }
                 else {
                     res.json({ token: err });
@@ -51,7 +51,7 @@ exports.CreateUser = function (req, res) {
     new_user.save(function (err, data) {
         if (err)
             res.send(err);
-        res.json('');
+        res.json({ SystemUserId: data.UserId });
     });
 };
 exports.searchUser = function (req, res) {
@@ -76,10 +76,20 @@ exports.updateUser = function (req, res) {
     var password = req.body.UserPassword;
     var date = new Date();
     req.body.ModifiedOn = date;
-    user.findOneAndUpdate({ UserId: req.params.UserId }, req.body, { new: true }, function (err, data) {
+    var query = { IsSuperAdmin: true };
+    user.find({ IsSuperAdmin: true, UserId: { $ne: req.params.UserId } }, function (err, result) {
         if (err)
-            res.send(err);
-        res.json(data);
+            throw err;
+        if (result == '' && req.body.IsSuperAdmin == 'false') {
+            res.json('One SuperAdmin');
+        }
+        else {
+            user.findOneAndUpdate({ UserId: req.params.UserId }, req.body, { new: true }, function (err, data) {
+                if (err)
+                    res.send(err);
+                res.json(data);
+            });
+        }
     });
 };
 exports.updateUserPassword = function (req, res) {

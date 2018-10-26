@@ -159,9 +159,24 @@ exports.EventModelWithPhotos = function (req, res) {
             }
         },
         {
-            "$sort": {
-                "EventDate": 1
+            $project: {
+                date: {
+                    $dateFromString: {
+                        dateString: '$EventDate'
+                    }
+                },
+                EventDescription: '$EventDescription',
+                EventDate: '$EventDate',
+                EventVenue: '$EventVenue',
+                IsPublished: '$IsPublished',
+                EventName: '$EventName',
+                IsActive: '$IsActive',
+                EventId: '$EventId',
+                EventWithPhoto: '$EventWithPhoto',
             }
+        },
+        {
+            $sort: { date: 1 }
         },
     ]).exec(function (err, data) {
         if (err)

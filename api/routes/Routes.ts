@@ -194,6 +194,9 @@ module.exports = function (app) {
     app.route('/userModules/:SystemUserId')
         .get(userModule.getUserModulesById)
 
+    app.route('/checkPermission/:SystemUserId/:SecurityModuleId')
+        .get(userModule.CheckPermissionOfModules)
+
     // Advertisement Routes
     app.route('/advertisement')
         .post(advertisement.createAdvertisement)

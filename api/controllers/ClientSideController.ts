@@ -170,7 +170,7 @@ exports.updateMemberProfile = function (req, res) {
         else {
             req.body.FileNameInFolder = req.body.OldFileName
         }
-        member.findOneAndUpdate({ MemberId: req.params.MemberId }, { 'FullName': req.body.FullName, 'SurName': req.body.SurName, 'MobileNo': req.body.MobileNo, 'Email': req.body.email, 'Address': req.body.Address, 'OldFileName': req.body.OldFileName, 'Image': req.body.Image, 'FileNameInFolder': req.body.FileNameInFolder, 'FileName': req.body.FileName }, { new: true }, function (err, member) {
+        member.findOneAndUpdate({ MemberId: req.params.MemberId }, { 'FullName': req.body.FullName, 'MobileNo': req.body.MobileNo, 'Email': req.body.email, 'Address': req.body.Address, 'OldFileName': req.body.OldFileName, 'Image': req.body.Image, 'FileNameInFolder': req.body.FileNameInFolder, 'FileName': req.body.FileName }, { new: true }, function (err, member) {
         if (err)
             res.send(err);
         res.json(member);
