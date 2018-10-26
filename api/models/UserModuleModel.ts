@@ -12,6 +12,14 @@ var userModuleSchema = new Schema({
     CreatedBy: { type: String, default: '' },
 }, { collection: 'UserModule' });
 
+
+autoIncrement.initialize(mongoose.connection);
+userModuleSchema.plugin(autoIncrement.plugin, {
+    model: 'UserModule', field: 'UserModuleId',
+    incrementBy: 1,
+    startAt: 1
+});
+
 var userModule = mongoose.model('UserModule', userModuleSchema);
 var userModuleArray = [{ UserModuleId: 1, SystemUserId: 1, SecurityModuleId: 1, IsActive: true },
 { UserModuleId: 2, SystemUserId: 1, SecurityModuleId: 2, IsActive: true },
@@ -25,14 +33,6 @@ var userModuleArray = [{ UserModuleId: 1, SystemUserId: 1, SecurityModuleId: 1, 
 { UserModuleId: 10, SystemUserId: 2, SecurityModuleId: 5, IsActive: true }
 ];
 
-autoIncrement.initialize(mongoose.connection);
-userModuleSchema.plugin(autoIncrement.plugin, {
-    model: 'UserModule', field: 'UserModuleId',
-    incrementBy: 1,
-    startAt: 1
-});
-module.exports = mongoose.model('UserModule', userModuleSchema);
-
 userModule.find({}, function (err, data) {
     if (err)
         return console.error(err);
@@ -44,3 +44,6 @@ userModule.find({}, function (err, data) {
         });
     }
 })
+
+module.exports = userModule;
+
