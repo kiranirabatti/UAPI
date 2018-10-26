@@ -29,7 +29,7 @@ autoIncrement.initialize(mongoose.connection);
 userModuleSchema.plugin(autoIncrement.plugin, {
     model: 'UserModule', field: 'UserModuleId',
     incrementBy: 1,
-    startAt: 11
+    startAt: 1
 });
 module.exports = mongoose.model('UserModule', userModuleSchema);
 
