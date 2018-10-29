@@ -20,7 +20,7 @@ var loginSchema = new Schema({
     ModifiedBy: { type: String, default: '' },
 });
 loginSchema.plugin(autoIncrement.plugin, {
-    model: 'systemusers', field: 'UserId', startAt: 1,
+    model: 'systemusers', field: 'UserId', startAt: 3,
     incrementBy: 1
 });
 loginSchema.pre('save', function (next) {
@@ -46,19 +46,5 @@ loginSchema.methods.comparePassword = function (candidatePassword, cb) {
     });
 };
 var users = mongoose.model('systemusers', loginSchema);
-var userArray = [{ UserId: 1, FirstName: "Admin", LastName: "Admin", UserPhone: "9652147852", UserEmailId: "aoza@gmail.com", UserPassword: "$2b$10$0GWEscRw1d6nHelO1tX4bexbdINuT1iBEaGEeKHCff/i1SYz0kqiO", IsActive: true, IsSuperAdmin: true },
-    { UserId: 2, FirstName: "Admin", LastName: "Admin", UserPhone: "9652147852", UserEmailId: "jatin@gmail.com", UserPassword: "$2b$10$0GWEscRw1d6nHelO1tX4bexbdINuT1iBEaGEeKHCff/i1SYz0kqiO", IsActive: true, IsSuperAdmin: true }
-];
-users.find({}, function (err, data) {
-    if (err)
-        return console.error(err);
-    if (data == '') {
-        users.collection.insert(userArray, function (err, docs) {
-            if (err) {
-                return console.error(err);
-            }
-        });
-    }
-});
 module.exports = users;
 //# sourceMappingURL=LoginModel.js.map
