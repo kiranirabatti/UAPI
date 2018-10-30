@@ -32,15 +32,13 @@
 const cors = require('cors');
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(fileUpload());
 mongoose.Promise = global.Promise;
 mongoose.connect(config.databaseURL);
 app.set('superSecret', config.secret); 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(function (err, req, res, next) {
     res.send({error:err.message})
 })

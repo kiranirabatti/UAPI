@@ -1,5 +1,7 @@
 D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\AdvertisementController.js
 D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\AdvertisementController.js.map
+D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\BannerManagementController.js
+D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\BannerManagementController.js.map
 D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\committeeMemberController.js
 D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\committeeMemberController.js.map
 D:\TFS\UGPS\UGPS.NodeAPI\api\controllers\ClientSideController.js
@@ -24,6 +26,10 @@ D:\TFS\UGPS\UGPS.NodeAPI\api\models\AdvertisementPhotos.js
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\AdvertisementPhotos.js.map
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\AdvertisementTypeModel.js
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\AdvertisementTypeModel.js.map
+D:\TFS\UGPS\UGPS.NodeAPI\api\models\BannerManagementModel.js
+D:\TFS\UGPS\UGPS.NodeAPI\api\models\BannerManagementModel.js.map
+D:\TFS\UGPS\UGPS.NodeAPI\api\models\BannerPhotos.js
+D:\TFS\UGPS\UGPS.NodeAPI\api\models\BannerPhotos.js.map
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\committeeMemberModel.js
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\committeeMemberModel.js.map
 D:\TFS\UGPS\UGPS.NodeAPI\api\models\CitizenshipModel.js

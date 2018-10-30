@@ -163,7 +163,7 @@ exports.updateMemberProfile = function (req, res) {
          flag = true;
         }
         req.body.UpdatedOn = date;
-
+        
         if (!flag) {
             req.body.FileNameInFolder = GUID + '.' + extension;
         }
