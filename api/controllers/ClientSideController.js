@@ -267,6 +267,7 @@ exports.getAllNativePlaces = function (req, res) {
 };
 exports.getAllMatrimonialMembers = function (req, res) {
     familyMember.aggregate([
+        { $match: { "LookingForPartner": "Yes" } },
         {
             $lookup: {
                 from: 'Height',
@@ -307,21 +308,6 @@ exports.getAllMatrimonialMembers = function (req, res) {
                 as: 'EducationData'
             },
         },
-        {
-            $unwind: { path: "$HeightData" }
-        },
-        {
-            $unwind: { path: "$CityData" }
-        },
-        {
-            $unwind: { path: "$CitizenshipData" }
-        },
-        {
-            $unwind: { path: "$NativeData" }
-        },
-        {
-            $unwind: { path: "$EducationData" }
-        },
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -333,7 +319,7 @@ exports.getMatrimonialResult = function (req, res) {
     var handicap = (req.params.handicap == 'true');
     var fromAge = req.params.fromAge;
     var toAge = req.params.toAge;
-    var gender = req.params.gender;
+    var gender = new RegExp("^" + req.params.gender + "$", "i");
     var martial = req.params.martial;
     var city = req.params.city;
     var education = req.params.education;
@@ -420,21 +406,6 @@ exports.getMatrimonialResult = function (req, res) {
                 foreignField: 'NativeId',
                 as: 'NativeData'
             }
-        },
-        {
-            $unwind: { path: "$HeightData" }
-        },
-        {
-            $unwind: { path: "$CitizenshipData" }
-        },
-        {
-            $unwind: { path: "$CityData" }
-        },
-        {
-            $unwind: { path: "$EducationData" }
-        },
-        {
-            $unwind: { path: "$NativeData" }
         },
         {
             "$project": {

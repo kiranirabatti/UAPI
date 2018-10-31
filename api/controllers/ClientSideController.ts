@@ -323,7 +323,8 @@ exports.getAllNativePlaces = function (req, res) {
 };
 
 exports.getAllMatrimonialMembers = function (req, res) {
-	familyMember.aggregate([
+    familyMember.aggregate([
+        { $match: { "LookingForPartner": "Yes" } },
 		{
 			$lookup:
 				{
@@ -368,26 +369,11 @@ exports.getAllMatrimonialMembers = function (req, res) {
 					foreignField: 'EducationId',
 					as: 'EducationData'
 				},
-		},
-		{
-			$unwind: { path: "$HeightData" }
-		},
-		{
-			$unwind: { path: "$CityData" }
-		},
-		{
-			$unwind: { path: "$CitizenshipData" }
-		},
-		{
-			$unwind: { path: "$NativeData" }
-		},
-		{
-			$unwind: { path: "$EducationData" }
-		},
+        },
 	]).exec(function (err, data) {
 		if (err)
 			res.send(err);
-		res.json(data);
+        res.json(data);
 	});
 }
 
@@ -396,7 +382,7 @@ exports.getMatrimonialResult = function (req, res) {
 	var handicap = (req.params.handicap == 'true');
 	var fromAge = req.params.fromAge;
 	var toAge = req.params.toAge;
-	var gender = req.params.gender;
+    var gender = new RegExp("^" + req.params.gender+ "$", "i");
 	var martial = req.params.martial;
 	var city = req.params.city;
 	var education = req.params.education;
@@ -450,7 +436,6 @@ exports.getMatrimonialResult = function (req, res) {
 	if (req.params.handicap != 'null') {
 		myMatch["Handicaped"] = handicap;
 	}
-
 	var query1 = ([
 		{
 			$match: myMatch
@@ -501,21 +486,6 @@ exports.getMatrimonialResult = function (req, res) {
 				}
 		},
 		{
-			$unwind: { path: "$HeightData" }
-		},
-		{
-			$unwind: { path: "$CitizenshipData" }
-		},
-		{
-			$unwind: { path: "$CityData" }
-		},
-		{
-			$unwind: { path: "$EducationData" }
-		},
-		{
-			$unwind: { path: "$NativeData" }
-		},
-		{
 			"$project": {
 				"HeightData._id": 0,
 				"HeightData.HeightId": 0,
@@ -526,14 +496,14 @@ exports.getMatrimonialResult = function (req, res) {
 				"EducationData._id": 0,
 				"EducationData.EducationId": 0,
 				"NativeData._id": 0,
-				"NativeData.NativeId": 0,
+                "NativeData.NativeId": 0,
 			}
 		}
 	]);
 	familyMember.aggregate(query1).exec(function (err, data) {
 		if (err)
 			res.send(err);
-		res.json(data);
+        res.json(data);
 	});
 };
 
