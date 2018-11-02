@@ -290,8 +290,8 @@ module.exports = function (app) {
     app.route('/authenticateFamilyMemberEmail/:EmailAddress')
 		.get(email.sendEmail)
 
-    app.route('/authenticateOTP/:EmailAddress/:OTP')
-        .get(email.validateEmail)
+    app.route('/authenticateOTP/:MobileNumber/:OTP/:referenceId/:isMember')
+        .get(email.validateOTP)
 
     app.route('/getMemberPhoto/:MemberId/:fileName')
         .get(clientSideController.sendMemberPhoto)
@@ -319,8 +319,8 @@ module.exports = function (app) {
     app.route('/searchCommitteeMember/:fieldName/:searchValue')
         .get(clientSideController.searchCommitteeMember)
 
-    app.route('/authenticateOTP/:EmailAddress/:OTP')
-        .get(email.validateEmail)
+    app.route('/authenticateOTP/:MobileNumber/:OTP')
+        .get(email.validateOTP)
 
     app.route('/authenticateMemberEmail/:EmailAddress')
         .get(email.sendEmailToMember)

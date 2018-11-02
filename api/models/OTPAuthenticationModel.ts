@@ -9,6 +9,7 @@ var OTPAuthenticationSchema = new Schema({
     IsMember: { type: Boolean, deafult: true },
     LoggedIn: { type: String, required: true },
     ClientIp: { type: String, required: false },
+    OTP: { type: Number, required: false }
 }, { collection: 'OTPAuthentication' });
 
 autoIncrement.initialize(mongoose.connection);
