@@ -19,7 +19,7 @@ module.exports = function (app) {
             || req.url.startsWith('/getGirlImage') || req.url.startsWith('/defaultEventImage') || req.url.startsWith('/adminLogo') || req.url.startsWith('/validateMember')
             || req.url.startsWith('/getfamilymembers') || req.url.startsWith('/familyMemberById') || req.url.startsWith('/bannerWithPhotos') || req.url.startsWith('/bannerphoto')
             || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage')
-            || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage')) {
+            || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage') || req.url.startsWith('/authenticateMemberMobile')) {
             next();
         }
         else {
@@ -233,6 +233,8 @@ module.exports = function (app) {
         .get(email.validateEmail);
     app.route('/authenticateMemberEmail/:EmailAddress')
         .get(email.sendEmailToMember);
+    app.route('/authenticateMemberMobile/:MobileNumber')
+        .get(email.sendSmsToMember);
     app.route('/getAllCities')
         .get(clientSideController.getAllCities);
     app.route('/getAllCitizenhips')

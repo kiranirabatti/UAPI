@@ -4,11 +4,11 @@ var autoIncrement = require('mongoose-auto-increment');
 var Schema = mongoose.Schema;
 
 var OTPAuthenticationSchema = new Schema({
-	OTPAuthenticationId: { type: Number, required: true },
-	EmailAddress: { type: String, required: true },
-	OTP: { type: Number, required: true },
-	CreatedTime: { type: Date, required: true },
-	ExpiredTime: { type: Date, required: true }
+    OTPAuthenticationId: { type: Number, required: true },
+    ReferenceId: { type: Number, required: true},
+    IsMember: { type: Boolean, deafult: true },
+    LoggedIn: { type: String, required: true },
+    ClientIp: { type: String, required: false },
 }, { collection: 'OTPAuthentication' });
 
 autoIncrement.initialize(mongoose.connection);

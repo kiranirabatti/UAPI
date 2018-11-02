@@ -94,6 +94,66 @@ exports.validateEmail = function (req, res) {
 		})
 };
 
+exports.sendSmsToMember = function (req, res) {
+    var mobileNumber = req.params.MobileNumber;
+    var result;
+    var new_otp = new otpAuthentication();
+    var IsMember = false;
+    var ClientIp = '';
+    member.findOne({ MobileNo: mobileNumber }, function (err, data) {
+        if (err) {
+            res.send('Internal server error');
+        }
+        else if (data) {
+            result = data;
+            if (result) {
+                IsMember = true;
+                ClientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+                var dt = dateTime.create(moment());
+                var formatted = dt.format('Y-m-d H:M:S');
+                new_otp.ReferenceId = result.MemberId;
+                new_otp.IsMember = IsMember;
+                new_otp.LoggedIn = formatted;
+                new_otp.ClientIp = ClientIp;
+                new_otp.save(function (err, data) {
+                    if (err) {
+                        res.status(500).send('Internal server error');
+                    }
+                    res.send(result);
+                });
+            }
+        }
+        else if (!data) {
+            familyMember.findOne({ Mobile: mobileNumber }, function (err, data) {
+                if (err) {
+                    res.send('Internal server error');
+                }
+                else if (!data)
+                    res.send('family member Mobile number not found');
+                else {
+                    result = data;
+                    if (result) {
+                        IsMember = false;
+                        ClientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+                        var dt = dateTime.create(moment());
+                        var formatted = dt.format('Y-m-d H:M:S');
+                        new_otp.ReferenceId = result.FamilyMemberId;
+                        new_otp.IsMember = IsMember;
+                        new_otp.LoggedIn = formatted;
+                        new_otp.ClientIp = ClientIp;
+                        new_otp.save(function (err, data) {
+                            if (err) {
+                                res.status(500).send('Internal server error');
+                            }
+                            res.send(result);
+                        });
+                    }
+                }
+            })
+        }
+    })
+}
+
 exports.sendEmailToMember = function (req, res) {
 	var email = req.params.EmailAddress;
 	var new_otp = new otpAuthentication();
