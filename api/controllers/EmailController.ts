@@ -215,7 +215,7 @@ exports.validateOTP = function (req, res) {
             var responce = vaerifiedData.toString();
             var obj = JSON.parse(responce);
             if (obj.type == 'success') {
-                new_otp.ReferenceId = ReferenceId ;
+                new_otp.ReferenceId = ReferenceId;
                 new_otp.IsMember = IsMember;
                 new_otp.LoggedIn = formatted;
                 new_otp.ClientIp = ClientIp;
@@ -226,6 +226,8 @@ exports.validateOTP = function (req, res) {
                     }
                     res.send(data);
                 });
+            } else {
+                res.send('Invalid OTP');
             }
         });
     });

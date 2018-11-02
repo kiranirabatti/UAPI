@@ -203,6 +203,9 @@ exports.validateOTP = function (req, res) {
                     res.send(data);
                 });
             }
+            else {
+                res.send('Invalid OTP');
+            }
         });
     });
     req1.write(qs.stringify({}));
