@@ -117,3 +117,13 @@ exports.searchUser = function (req, res) {
         });
 };
 
+exports.isAjivansabhyanumberAvaliable = function (req, res) {
+    var ajivansabhyanumber = req.params.searchvalue;
+    Member.find(
+        { 'Ajivansabhyanumber':ajivansabhyanumber }
+        , function (err, member) {
+            if (err)
+                res.send(err);
+            res.json(member);
+        });
+};

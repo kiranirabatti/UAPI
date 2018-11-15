@@ -76,6 +76,9 @@ module.exports = function (app) {
         .get(FamilyMemberlist.getFamilyMemberbyMemberId)
         .put(FamilyMemberlist.updateFamilyMember)
 
+    app.route('/familyMember/:FamilyMemberId')
+        .get(FamilyMemberlist.getFamilyMember)
+
     app.route('/getImage/:memberId/:fMemberId/:fileName')
         .get(FamilyMemberlist.getImage)
 
@@ -104,6 +107,9 @@ module.exports = function (app) {
 
     app.route('/members/:fieldname/:searchvalue')
         .get(Memberlist.searchUser)
+
+    app.route('/Ajivansabhyanumber/:searchvalue')
+        .get(Memberlist.isAjivansabhyanumberAvaliable)
 
     app.route('/getPhoto/:MemberId/:fileName')
         .get(Memberlist.sendMemberPhoto)

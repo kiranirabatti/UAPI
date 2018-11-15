@@ -62,6 +62,14 @@ exports.getFamilyMemberbyMemberId = function (req, res) {
     });
 };
 
+exports.getFamilyMember = function (req, res) {
+    Member.find({ FamilyMemberId: req.params.FamilyMemberId }, function (err, member) {
+        if (err)
+            res.send(err);
+        res.json(member);
+    });
+};
+
 exports.updateFamilyMember = function (req, res) {
     var date = new Date,
         fs = require('fs'),

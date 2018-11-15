@@ -96,4 +96,12 @@ exports.searchUser = function (req, res) {
         res.json(member);
     });
 };
+exports.isAjivansabhyanumberAvaliable = function (req, res) {
+    var ajivansabhyanumber = req.params.searchvalue;
+    Member.find({ 'Ajivansabhyanumber': ajivansabhyanumber }, function (err, member) {
+        if (err)
+            res.send(err);
+        res.json(member);
+    });
+};
 //# sourceMappingURL=MembersController.js.map

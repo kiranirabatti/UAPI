@@ -47,6 +47,13 @@ exports.getFamilyMemberbyMemberId = function (req, res) {
         res.json(member);
     });
 };
+exports.getFamilyMember = function (req, res) {
+    Member.find({ FamilyMemberId: req.params.FamilyMemberId }, function (err, member) {
+        if (err)
+            res.send(err);
+        res.json(member);
+    });
+};
 exports.updateFamilyMember = function (req, res) {
     var date = new Date, fs = require('fs'), GUID = random.randomBytes(16).toString("hex"), extension = req.body.Filename.slice((req.body.Filename.lastIndexOf(".") - 1 >>> 0) + 2), flag = false;
     if (req.body.file.startsWith(config.nodeURL + '/getStaticImage')) {
