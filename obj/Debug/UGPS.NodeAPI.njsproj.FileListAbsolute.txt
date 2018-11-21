@@ -1,2 +1,3 @@
+D:\TFS\UGPS\UGPS.NodeAPI\obj\Debug\UGPS.NodeAPI.njsprojResolveAssemblyReference.cache
 D:\TFS\UGPS\UGPS.NodeAPI\obj\Debug\UGPS.NodeAPI.njsproj.CoreCompileInputs.cache
 D:\TFS\UGPS\UGPS.NodeAPI\bin\Microsoft.NodejsTools.WebRole.dll

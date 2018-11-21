@@ -11,6 +11,12 @@ var securityModuleSchema = new Schema({
     CreatedBy: { type: String, default: '' },
 }, { collection: 'SecurityModule' });
 
+autoIncrement.initialize(mongoose.connection);
+securityModuleSchema.plugin(autoIncrement.plugin, {
+    model: 'SecurityModule', field: 'SecurityModuleId', startAt: 1,
+    incrementBy: 1
+});
+
 var SecurityModule = mongoose.model('SecurityModule', securityModuleSchema);
 var SecurityModuleArray = [
     { SecurityModuleId: 1, SecurityModuleName: "Member and Family Member", Description: "member" },
@@ -20,13 +26,31 @@ var SecurityModuleArray = [
     { SecurityModuleId: 5, SecurityModuleName: "Banner", Description: "Banner" }
 ];
 
+var counters = mongoose.model('identitycounters');
+    
 SecurityModule.find({}, function(err, data) {
     if (err)
         return console.error(err);
     if (data == '') {
+        SecurityModule.nextCount(function (err, count) {
+            count === 1;
+            SecurityModule.resetCount(function (err, nextCount) {
+                nextCount === 0;
+            });
+        });
+
         SecurityModule.collection.insert(SecurityModuleArray, function(err, docs) {
             if (err) {
                 return console.error(err);
+            }
+            else {
+                counters.findOneAndUpdate({
+                    model: 'SecurityModule'
+                }, { $set: { count: SecurityModuleArray.length } }, { upsert: false }, function (err, res) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                });
             }
         });
     }
@@ -38,9 +62,5 @@ SecurityModule.find({}, function(err, data) {
     }
 })
 
-autoIncrement.initialize(mongoose.connection);
-securityModuleSchema.plugin(autoIncrement.plugin, {
-    model: 'SecurityModule', field: 'SecurityModuleId', startAt: 1,
-    incrementBy: 1
-});
+
 module.exports = mongoose.model('SecurityModule', securityModuleSchema);
