@@ -97,7 +97,7 @@ exports.sendSmsToMember = function (req, res) {
         }
         else if (data) {
             result = data;
-            if (result) {
+            if (result && result.IsActive) {
                 var message = 'Your verification code is ##OTP##';
                 var options = {
                     "method": "POST",
@@ -122,6 +122,9 @@ exports.sendSmsToMember = function (req, res) {
                 });
                 req.end();
             }
+            else {
+                res.send('Inactive member');
+            }
         }
         else if (!data) {
             familyMember.findOne({ Mobile: mobileNumber }, function (err, data) {
@@ -129,34 +132,42 @@ exports.sendSmsToMember = function (req, res) {
                     res.send('Internal server error');
                 }
                 else if (!data)
-                    res.send('family member Mobile number not found');
+                    res.send('Member mobile number not found');
                 else {
                     result = data;
-                    if (result) {
-                        var message = 'Your verification code is ##OTP##';
-                        var options = {
-                            "method": "POST",
-                            "hostname": "control.msg91.com",
-                            "port": null,
-                            "path": '/api/sendotp.php?authkey=245867AY8LDlZMEhx85bdbf435&message=' + encodeURIComponent(message) + '&sender=UGPSOT&mobile=' + mobileNumber,
-                            "headers": {},
-                        };
-                        var req = http.request(options, function (result) {
-                            var chunks = [];
-                            result.on("data", function (chunk) {
-                                chunks.push(chunk);
+                    member.findOne({ MemberId: result.MemberId }, function (err, memberData) {
+                        if (err) {
+                            res.send('Internal server error');
+                        }
+                        if (result && memberData.IsActive) {
+                            var message = 'Your verification code is ##OTP##';
+                            var options = {
+                                "method": "POST",
+                                "hostname": "control.msg91.com",
+                                "port": null,
+                                "path": '/api/sendotp.php?authkey=245867AY8LDlZMEhx85bdbf435&message=' + encodeURIComponent(message) + '&sender=UGPSOT&mobile=' + mobileNumber,
+                                "headers": {},
+                            };
+                            var req = http.request(options, function (result) {
+                                var chunks = [];
+                                result.on("data", function (chunk) {
+                                    chunks.push(chunk);
+                                });
+                                result.on("end", function () {
+                                    var validMemberData = Buffer.concat(chunks);
+                                    var responce = validMemberData.toString();
+                                    var obj = JSON.parse(responce);
+                                    if (obj.type == 'success') {
+                                        res.send(data);
+                                    }
+                                });
                             });
-                            result.on("end", function () {
-                                var validMemberData = Buffer.concat(chunks);
-                                var responce = validMemberData.toString();
-                                var obj = JSON.parse(responce);
-                                if (obj.type == 'success') {
-                                    res.send(data);
-                                }
-                            });
-                        });
-                        req.end();
-                    }
+                            req.end();
+                        }
+                        else {
+                            res.send('Inactive member');
+                        }
+                    });
                 }
             });
         }

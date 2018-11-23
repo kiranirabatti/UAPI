@@ -1,99 +1,99 @@
 ﻿var nodemailer = require("nodemailer");
 var otplib = require('otplib');
 var config = require('../../Config'),
-	mongoose = require('mongoose'),
-	familyMember = mongoose.model('FamilyMember'),
-	otpAuthentication = mongoose.model('OTPAuthentication'),
-	dateTime = require('node-datetime'),
-	moment = require('moment'),
+    mongoose = require('mongoose'),
+    familyMember = mongoose.model('FamilyMember'),
+    otpAuthentication = mongoose.model('OTPAuthentication'),
+    dateTime = require('node-datetime'),
+    moment = require('moment'),
     member = mongoose.model('Member');
 var http = require("http");
 var qs = require("querystring");
 
 exports.sendEmail = function (req, res) {
-	var email = req.params.EmailAddress;
-	var new_otp = new otpAuthentication();
+    var email = req.params.EmailAddress;
+    var new_otp = new otpAuthentication();
     familyMember.findOne({ Email: email, LookingForPartner: 'Yes' }, function (err, data) {
-		if (err)
+        if (err)
             res.status(500).send('Internal server error');
-		else if (!data)
-			res.send('User not found');
-		else {
-			const token = otplib.authenticator.generate(config.secret);
-			var smtpTransport = nodemailer.createTransport({
-				service: "gmail",
+        else if (!data)
+            res.send('User not found');
+        else {
+            const token = otplib.authenticator.generate(config.secret);
+            var smtpTransport = nodemailer.createTransport({
+                service: "gmail",
                 host: "smtp.gmail.com",
                 port: 587,
-				auth: {
-					user: "scriptshubtechnologies@gmail.com",
-					pass: "ScriptsHub@4321"
-				}
-			});
-			var mailOptions = {
-				to: email,
-				subject: "UGPS OTP for Login",
-				html: '<strong>Your one time password is: ' + token + '</strong>'
-			}
-			smtpTransport.sendMail(mailOptions, function (error, response) {
-				if (error) {
-					res.status(500).send('Internal server error');
-				}
-				else if (response) {
-					var dt = dateTime.create(moment());
-					var formatted = dt.format('Y-m-d H:M:S');
-					new_otp.EmailAddress = email;
-					new_otp.CreatedTime = formatted;
-					new_otp.ExpiredTime = moment(formatted).add(10, 'minutes');
-					new_otp.OTP = token;
-					new_otp.save(function (err, data) {
-						if (err)
-							res.status(500).send('Internal server error');
-						res.send(data);
-					});
-				}
-				else {
-					res.send('');
-				}
-			});
-		}
-	});
+                auth: {
+                    user: "scriptshubtechnologies@gmail.com",
+                    pass: "ScriptsHub@4321"
+                }
+            });
+            var mailOptions = {
+                to: email,
+                subject: "UGPS OTP for Login",
+                html: '<strong>Your one time password is: ' + token + '</strong>'
+            }
+            smtpTransport.sendMail(mailOptions, function (error, response) {
+                if (error) {
+                    res.status(500).send('Internal server error');
+                }
+                else if (response) {
+                    var dt = dateTime.create(moment());
+                    var formatted = dt.format('Y-m-d H:M:S');
+                    new_otp.EmailAddress = email;
+                    new_otp.CreatedTime = formatted;
+                    new_otp.ExpiredTime = moment(formatted).add(10, 'minutes');
+                    new_otp.OTP = token;
+                    new_otp.save(function (err, data) {
+                        if (err)
+                            res.status(500).send('Internal server error');
+                        res.send(data);
+                    });
+                }
+                else {
+                    res.send('');
+                }
+            });
+        }
+    });
 }
 
 exports.validateEmail = function (req, res) {
-	var email = req.params.EmailAddress;
-	var otp = req.params.OTP;
-	otpAuthentication.find({
-		EmailAddress: email
-	},
-		['type', 'CreatedTime', 'OTP', 'EmailAddress', 'ExpiredTime'],
-		{
-			skip: 0,
-			limit: 1,
-			sort: {
-				CreatedTime: -1
-			}
-		},
-		function (err, data) {
-			if (err)
-				res.status(500).send('Internal server error');
-			else if (data) {
-				var dt = dateTime.create(moment());
-				var formatted = dt.format('Y-m-d H:M:S');
-				var result = data[0].ExpiredTime.getTime() - dt.getTime();
-				var final = result / 60000;
-				if (final < 0 || final > 10) {
-					res.send('OTP is not valid');
-				}
-				else {
-					if (data[0].OTP == otp)
-						res.send(data);
-					else
-						res.send('OTP is not valid');
-				}
-			}
-			else
-				res.send('Email is not found');
-		})
+    var email = req.params.EmailAddress;
+    var otp = req.params.OTP;
+    otpAuthentication.find({
+        EmailAddress: email
+    },
+        ['type', 'CreatedTime', 'OTP', 'EmailAddress', 'ExpiredTime'],
+        {
+            skip: 0,
+            limit: 1,
+            sort: {
+                CreatedTime: -1
+            }
+        },
+        function (err, data) {
+            if (err)
+                res.status(500).send('Internal server error');
+            else if (data) {
+                var dt = dateTime.create(moment());
+                var formatted = dt.format('Y-m-d H:M:S');
+                var result = data[0].ExpiredTime.getTime() - dt.getTime();
+                var final = result / 60000;
+                if (final < 0 || final > 10) {
+                    res.send('OTP is not valid');
+                }
+                else {
+                    if (data[0].OTP == otp)
+                        res.send(data);
+                    else
+                        res.send('OTP is not valid');
+                }
+            }
+            else
+                res.send('Email is not found');
+        })
 };
 
 
@@ -105,14 +105,14 @@ exports.sendSmsToMember = function (req, res) {
     var IsMember = false;
     var ClientIp = '';
     var OTP = '';
-    
+
     member.findOne({ MobileNo: mobileNumber }, function (err, data) {
         if (err) {
             res.send('Internal server error');
         }
         else if (data) {
             result = data;
-            if (result) {
+            if (result && result.IsActive) {
                 var message = 'Your verification code is ##OTP##';
                 var options = {
                     "method": "POST",
@@ -120,7 +120,7 @@ exports.sendSmsToMember = function (req, res) {
                     "port": null,
                     "path": '/api/sendotp.php?authkey=245867AY8LDlZMEhx85bdbf435&message=' + encodeURIComponent(message) + '&sender=UGPSOT&mobile='+mobileNumber,
                     "headers": {},
-                   
+
                 };
                 var req = http.request(options, function (result) {
                     var chunks = [];
@@ -128,7 +128,7 @@ exports.sendSmsToMember = function (req, res) {
                     result.on("data", function (chunk) {
                         chunks.push(chunk);
                     });
-                   
+
                     result.on("end", function () {
                         var validMemberData = Buffer.concat(chunks);
                         var responce = validMemberData.toString();
@@ -140,6 +140,9 @@ exports.sendSmsToMember = function (req, res) {
                 });
                 req.end();
             }
+            else {
+                res.send('Inactive member');
+            }
         }
         else if (!data) {
             familyMember.findOne({ Mobile: mobileNumber }, function (err, data) {
@@ -147,36 +150,44 @@ exports.sendSmsToMember = function (req, res) {
                     res.send('Internal server error');
                 }
                 else if (!data)
-                    res.send('family member Mobile number not found');
+                    res.send('Member mobile number not found');
                 else {
                     result = data;
-                    if (result) {
-                        var message = 'Your verification code is ##OTP##';
-                        var options = {
-                            "method": "POST",
-                            "hostname": "control.msg91.com",
-                            "port": null,
-                            "path": '/api/sendotp.php?authkey=245867AY8LDlZMEhx85bdbf435&message='+encodeURIComponent(message)+'&sender=UGPSOT&mobile='+mobileNumber,
-                            "headers": {},
-                        };
-                        var req = http.request(options, function (result) {
-                            var chunks = [];
+                    member.findOne({ MemberId: result.MemberId }, function (err, memberData) {
+                        if (err) {
+                            res.send('Internal server error');
+                        }
+                        if (result && memberData.IsActive) {
+                            var message = 'Your verification code is ##OTP##';
+                            var options = {
+                                "method": "POST",
+                                "hostname": "control.msg91.com",
+                                "port": null,
+                                "path": '/api/sendotp.php?authkey=245867AY8LDlZMEhx85bdbf435&message='+encodeURIComponent(message)+'&sender=UGPSOT&mobile='+mobileNumber,
+                                "headers": {},
+                            };
+                            var req = http.request(options, function (result) {
+                                var chunks = [];
 
-                            result.on("data", function (chunk) {
-                                chunks.push(chunk);
-                            });
+                                result.on("data", function (chunk) {
+                                    chunks.push(chunk);
+                                });
 
-                            result.on("end", function () {
-                                var validMemberData = Buffer.concat(chunks);
-                                var responce = validMemberData.toString();
-                                var obj = JSON.parse(responce);
-                                if (obj.type == 'success') {
-                                    res.send(data);
-                                }
+                                result.on("end", function () {
+                                    var validMemberData = Buffer.concat(chunks);
+                                    var responce = validMemberData.toString();
+                                    var obj = JSON.parse(responce);
+                                    if (obj.type == 'success') {
+                                        res.send(data);
+                                    }
+                                });
                             });
-                        });
-                        req.end();
-                    }
+                            req.end();
+                        }
+                        else {
+                            res.send('Inactive member');
+                        }
+                    });
                 }
             })
         }
@@ -238,53 +249,53 @@ exports.validateOTP = function (req, res) {
 
 
 exports.sendEmailToMember = function (req, res) {
-	var email = req.params.EmailAddress;
-	var new_otp = new otpAuthentication();
-	var result;
-	member.findOne({ Email: email }, function (err, data) {
+    var email = req.params.EmailAddress;
+    var new_otp = new otpAuthentication();
+    var result;
+    member.findOne({ Email: email }, function (err, data) {
         if (err) {
             res.status(500).send('Internal server error');
         }
-		else if (!data)
-			res.send('Email not found');
-		else {
-			result = data;
-			const otp = otplib.authenticator.generate(config.secret);
-			var smtpTransport = nodemailer.createTransport({
-				service: "gmail",
+        else if (!data)
+            res.send('Email not found');
+        else {
+            result = data;
+            const otp = otplib.authenticator.generate(config.secret);
+            var smtpTransport = nodemailer.createTransport({
+                service: "gmail",
                 host: "smtp.gmail.com",
                 port: 587,
-				auth: {
-					user: "scriptshubtechnologies@gmail.com",
-					pass: "ScriptsHub@4321"
-				}
-			});
-			var mailOptions = {
-				to: email,
-				subject: "UGPS OTP for member Login",
-				html: '<strong>Your one time password is: ' + otp + '</strong>'
-			}
-			smtpTransport.sendMail(mailOptions, function (error, response) {
+                auth: {
+                    user: "scriptshubtechnologies@gmail.com",
+                    pass: "ScriptsHub@4321"
+                }
+            });
+            var mailOptions = {
+                to: email,
+                subject: "UGPS OTP for member Login",
+                html: '<strong>Your one time password is: ' + otp + '</strong>'
+            }
+            smtpTransport.sendMail(mailOptions, function (error, response) {
                 if (error) {
-					res.status(500).send('Error while sending email'+error);
-				}
-				else if (response) {
-					var dt = dateTime.create(moment());
-					var formatted = dt.format('Y-m-d H:M:S');
-					new_otp.EmailAddress = email;
-					new_otp.CreatedTime = formatted;
-					new_otp.ExpiredTime = moment(formatted).add(10, 'minutes');
-					new_otp.OTP = otp;
-					new_otp.save(function (err, data) {
+                    res.status(500).send('Error while sending email'+error);
+                }
+                else if (response) {
+                    var dt = dateTime.create(moment());
+                    var formatted = dt.format('Y-m-d H:M:S');
+                    new_otp.EmailAddress = email;
+                    new_otp.CreatedTime = formatted;
+                    new_otp.ExpiredTime = moment(formatted).add(10, 'minutes');
+                    new_otp.OTP = otp;
+                    new_otp.save(function (err, data) {
                         if (err) {
                             res.status(500).send('Internal server error');
                         }
-						res.send(result);
-					});
-				}
-				else
-					res.send('Email not found');
-			});
-		}
-	});
+                        res.send(result);
+                    });
+                }
+                else
+                    res.send('Email not found');
+            });
+        }
+    });
 }
