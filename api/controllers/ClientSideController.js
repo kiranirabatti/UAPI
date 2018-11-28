@@ -315,6 +315,7 @@ exports.getAllMatrimonialMembers = function (req, res) {
     });
 };
 exports.getMatrimonialResult = function (req, res) {
+    console.log(req.params.martial);
     var manglik = req.params.manglik;
     var handicap = (req.params.handicap == 'true');
     var fromAge = req.params.fromAge;
@@ -328,7 +329,7 @@ exports.getMatrimonialResult = function (req, res) {
     var height = req.params.height;
     var myMatch = {
         LookingForPartner: "Yes",
-        MaritalStatus: { "$ne": "Married" }
+        MaritalStatus: { "$ne": "married" || "Married" }
     };
     if (req.params.fromAge != 'null') {
         if (req.params.toAge != 'null')

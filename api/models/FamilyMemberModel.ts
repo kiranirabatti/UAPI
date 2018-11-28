@@ -43,4 +43,18 @@ FamilyMembersSchema.plugin(autoIncrement.plugin, {
     startAt: 1,
     incrementBy: 1
 });
+
+var familyMembers = mongoose.model('FamilyMember', FamilyMembersSchema);
+familyMembers.find({}, function (err, data) {
+    if (err)
+        return console.error(err);
+    if (data == '') {
+        familyMembers.nextCount(function (err, count) {
+            count === 1;
+            familyMembers.resetCount(function (err, nextCount) {
+                nextCount === 0;
+            });
+        });
+    }
+})
 module.exports = mongoose.model('FamilyMember', FamilyMembersSchema);

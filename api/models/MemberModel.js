@@ -33,5 +33,18 @@ MembersSchema.plugin(autoIncrement.plugin, {
     model: 'Member', field: 'MemberId', startAt: 1,
     incrementBy: 1
 });
+var members = mongoose.model('Member', MembersSchema);
+members.find({}, function (err, data) {
+    if (err)
+        return console.error(err);
+    if (data == '') {
+        members.nextCount(function (err, count) {
+            count === 1;
+            members.resetCount(function (err, nextCount) {
+                nextCount === 0;
+            });
+        });
+    }
+});
 module.exports = mongoose.model('Member', MembersSchema);
 //# sourceMappingURL=MemberModel.js.map

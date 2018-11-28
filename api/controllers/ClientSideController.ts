@@ -383,7 +383,7 @@ exports.getMatrimonialResult = function (req, res) {
 	var fromAge = req.params.fromAge;
 	var toAge = req.params.toAge;
     var gender = new RegExp("^" + req.params.gender+ "$", "i");
-	var martial = req.params.martial;
+    var martial = new RegExp("^" + req.params.martial + "$", "i");
 	var city = req.params.city;
 	var education = req.params.education;
 	var citizenShip = req.params.citizenShip;
@@ -391,7 +391,7 @@ exports.getMatrimonialResult = function (req, res) {
 	var height = req.params.height;
 	var myMatch = {
 		LookingForPartner: "Yes",
-		MaritalStatus: { "$ne": "Married" }
+        MaritalStatus: { "$ne": "married" || "Married"}
 	};
 
 	if (req.params.fromAge != 'null') {
