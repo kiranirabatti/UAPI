@@ -315,7 +315,6 @@ exports.getAllMatrimonialMembers = function (req, res) {
     });
 };
 exports.getMatrimonialResult = function (req, res) {
-    console.log(req.params.martial);
     var manglik = req.params.manglik;
     var handicap = (req.params.handicap == 'true');
     var fromAge = req.params.fromAge;

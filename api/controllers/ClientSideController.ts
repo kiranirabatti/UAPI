@@ -383,7 +383,7 @@ exports.getMatrimonialResult = function (req, res) {
 	var fromAge = req.params.fromAge;
 	var toAge = req.params.toAge;
     var gender = new RegExp("^" + req.params.gender+ "$", "i");
-    var martial = new RegExp("^" + req.params.martial + "$", "i");
+    var martial =req.params.martial;
 	var city = req.params.city;
 	var education = req.params.education;
 	var citizenShip = req.params.citizenShip;
@@ -586,7 +586,7 @@ exports.searchCommitteeMember = function (req, res) {
 		]).exec(function (err, data) {
 			if (err)
 				res.send(err);
-			res.json(data);
+            res.json(data);
 		});
 	}
 	else {
