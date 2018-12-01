@@ -5,25 +5,34 @@ exports.createMember = function (req, res) {
     if (!req.body.Image.startsWith(config.nodeURL + '/getStaticImage')) {
         newmember.FileNameInFolder = GUID + '.' + extension;
     }
-    newmember.save(function (err, data) {
+    Member.find({ 'Ajivansabhyanumber': req.body.Ajivansabhyanumber }, function (err, member) {
         if (err)
             res.send(err);
-        res.json({ Member_Id: newmember.MemberId, MemberName: newmember.FullName });
-        if (req.body.Image) {
-            if (!req.body.Image.startsWith(config.nodeURL + '/getStaticImage')) {
-                var memberDir = ('./Photos/Members');
-                if (!fs.existsSync(memberDir)) {
-                    fs.mkdirSync(memberDir);
+        if (member != '') {
+            res.json("already exist");
+        }
+        else {
+            newmember.save(function (err, data) {
+                if (err)
+                    res.send(err);
+                res.json({ Member_Id: newmember.MemberId, MemberName: newmember.FullName });
+                if (req.body.Image) {
+                    if (!req.body.Image.startsWith(config.nodeURL + '/getStaticImage')) {
+                        var memberDir = ('./Photos/Members');
+                        if (!fs.existsSync(memberDir)) {
+                            fs.mkdirSync(memberDir);
+                        }
+                        var dir = (memberDir + '/' + newmember.MemberId);
+                        if (!fs.existsSync(dir)) {
+                            fs.mkdirSync(dir);
+                        }
+                        var base64Data = req.body.Image.replace(/^data:image\/\w+;base64,/, "");
+                        fs.writeFile((dir + "/" + GUID + '.' + extension), base64Data, 'base64', function (err) {
+                            console.log(err);
+                        });
+                    }
                 }
-                var dir = (memberDir + '/' + newmember.MemberId);
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                var base64Data = req.body.Image.replace(/^data:image\/\w+;base64,/, "");
-                fs.writeFile((dir + "/" + GUID + '.' + extension), base64Data, 'base64', function (err) {
-                    console.log(err);
-                });
-            }
+            });
         }
     });
 };
