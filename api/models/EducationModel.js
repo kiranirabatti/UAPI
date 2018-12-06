@@ -10,7 +10,7 @@ var education = mongoose.model('Education', EducationSchema);
 var educationArray = [
     { EducationId: 1, Description: "All" },
     { EducationId: 2, Description: "Uneducated" },
-    { EducationId: 3, Description: "Nursery " },
+    { EducationId: 3, Description: "Nursery" },
     { EducationId: 4, Description: "1st" },
     { EducationId: 5, Description: "2nd" },
     { EducationId: 6, Description: "3rd" },
@@ -27,8 +27,8 @@ var educationArray = [
     { EducationId: 17, Description: "M.A" },
     { EducationId: 18, Description: "BCA" },
     { EducationId: 19, Description: "MCA" },
-    { EducationId: 20, Description: "BSc" },
-    { EducationId: 21, Description: "MSc " },
+    { EducationId: 20, Description: "B.Sc" },
+    { EducationId: 21, Description: "M.Sc " },
     { EducationId: 22, Description: "B.Com" },
     { EducationId: 23, Description: "M.Com" },
     { EducationId: 24, Description: "Dipaloma" },
@@ -39,7 +39,7 @@ var educationArray = [
     { EducationId: 29, Description: "B.Ed" },
     { EducationId: 30, Description: "M.Ed" },
     { EducationId: 31, Description: "Graduate" },
-    { EducationId: 32, Description: "ITI" },
+    { EducationId: 32, Description: "I.T.I" },
     { EducationId: 33, Description: "MBA" },
 ];
 education.find({}, function (err, data) {
