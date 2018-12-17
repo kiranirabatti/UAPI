@@ -548,10 +548,31 @@ exports.getAllCommitteeMembers = function (req, res) {
 };
 
 exports.searchCommitteeMember = function (req, res) {
+    console.log(req.params)
+    var commiteeMemberType = req.params.memberTypeValue == 'All' ? '' : req.params.memberTypeValue;
+    console.log("type");
+    console.log(commiteeMemberType)
 	var searchValue = req.params.searchValue;
 	var fieldName = req.params.fieldName;
 	var regex = new RegExp(req.params.searchValue, 'i');
 	var query = {};
+
+    if (req.params.memberTypeValue != 'null') {
+        query["MemberType"] = req.params.memberTypeValue;
+    }
+    if (fieldName== 'CommitteeMemberData.FullName') {
+        query["name"] = regex;
+    }
+    if (fieldName == 'CommitteeMemberData.Email') {
+        query["CommitteeMemberData.Email"] = regex;
+    }
+    if (fieldName == 'DesignationData.Designation') {
+        query["DesignationData.Designation"] = regex;
+    }
+    //if (req.params.memberTypeValue != 'null') {
+    //    query[fieldName] = regex;
+    //}
+    console.log(query)
 	if (fieldName == 'CommitteeMemberData.FullName') {
 		Committee.aggregate([
 			{
@@ -581,8 +602,8 @@ exports.searchCommitteeMember = function (req, res) {
 			}, {
 				$unwind: { path: "$CommitteeMemberData" }
 			},
-			{ $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name:"$CommitteeMemberData.FullName" } },
-			{ $match: { 'name': regex } },
+            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'MemberType':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name:"$CommitteeMemberData.FullName" } },
+            { $match: query },
 		]).exec(function (err, data) {
 			if (err)
 				res.send(err);
@@ -615,9 +636,11 @@ exports.searchCommitteeMember = function (req, res) {
 				}
 			},
 			{
-				$match: {
-					[fieldName]: regex
-				}
+				//$match: {
+    //                [fieldName]: regex,
+    //                'MemberType': commiteeMemberType
+                //}
+                $match: query
 			}, {
 				$unwind: { path: "$DesignationData" }
 			}, {
@@ -690,4 +713,19 @@ exports.getBannerPhoto = function (req, res) {
     if (fs.existsSync(fileLocation)) {
         res.sendFile(path.resolve(fileLocation));
     }
+};
+
+exports.getRecentlyJoinedMembers = function (req, res) {
+        member.aggregate([
+            {
+                $sort: { _id: -1 },
+            },
+            {
+                $limit: 3
+            }
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };

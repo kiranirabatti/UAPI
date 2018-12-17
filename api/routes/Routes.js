@@ -19,7 +19,8 @@ module.exports = function (app) {
             || req.url.startsWith('/getGirlImage') || req.url.startsWith('/defaultEventImage') || req.url.startsWith('/adminLogo') || req.url.startsWith('/validateMember')
             || req.url.startsWith('/getfamilymembers') || req.url.startsWith('/familyMemberById') || req.url.startsWith('/bannerWithPhotos') || req.url.startsWith('/bannerphoto')
             || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage')
-            || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage') || req.url.startsWith('/authenticateMemberMobile')) {
+            || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage') || req.url.startsWith('/authenticateMemberMobile')
+            || req.url.startsWith('/recentlyJoinedMembers')) {
             next();
         }
         else {
@@ -202,6 +203,8 @@ module.exports = function (app) {
         .get(clientSideController.getAllFamilyMembers);
     app.route('/allmembers')
         .get(clientSideController.getAllMembers);
+    app.route('/recentlyJoinedMembers')
+        .get(clientSideController.getRecentlyJoinedMembers);
     app.route('/getFamilyMemberImage/:memberId/:fMemberId/:fileName')
         .get(clientSideController.getFamilyMemberImage);
     app.route('/defaultImage')
@@ -231,7 +234,7 @@ module.exports = function (app) {
         .get(clientSideController.getFamilyMemberbyMemberId);
     app.route('/committeeMember')
         .get(clientSideController.getAllCommitteeMembers);
-    app.route('/searchCommitteeMember/:fieldName/:searchValue')
+    app.route('/searchCommitteeMember/:memberTypeValue/:fieldName/:searchValue')
         .get(clientSideController.searchCommitteeMember);
     app.route('/authenticateOTP/:MobileNumber/:OTP')
         .get(email.validateOTP);

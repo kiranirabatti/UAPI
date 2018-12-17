@@ -31,16 +31,17 @@ var educationArray = [
     { EducationId: 21, Description: "M.Sc " },
     { EducationId: 22, Description: "B.Com" },
     { EducationId: 23, Description: "M.Com" },
-    { EducationId: 24, Description: "Dipaloma" },
+    { EducationId: 24, Description: "Diploma" },
     { EducationId: 25, Description: "BE" },
     { EducationId: 26, Description: "ME" },
     { EducationId: 27, Description: "B.Tech" },
     { EducationId: 28, Description: "M.Tech" },
     { EducationId: 29, Description: "B.Ed" },
     { EducationId: 30, Description: "M.Ed" },
-    { EducationId: 31, Description: "Graduate" },
-    { EducationId: 32, Description: "I.T.I" },
-    { EducationId: 33, Description: "MBA" },
+    { EducationId: 31, Description: "D.Ed" },
+    { EducationId: 32, Description: "Graduate" },
+    { EducationId: 33, Description: "I.T.I" },
+    { EducationId: 34, Description: "MBA" },
 ];
 education.find({}, function (err, data) {
     if (err)

@@ -51,6 +51,7 @@ exports.CreateCommitteeMember = function (req, res) {
     var new_committee = new Committee();
     new_committee.MemberId = req.body.MemberId;
     new_committee.CommitteeMemberDesignation = req.body.CommitteeMemberDesignation;
+    new_committee.MemberType = req.body.MemberType;
     new_committee.CreatedOn = date;
     new_committee.save(function (err, data) {
         if (err)
@@ -118,7 +119,7 @@ exports.searchCommitteeMember = function (req, res) {
             }, {
                 $unwind: { path: "$CommitteeMemberData" }
             },
-            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
+            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'MemberType': 1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
             { $match: { 'name': regex } },
         ]).exec(function (err, data) {
             if (err)
@@ -162,6 +163,7 @@ exports.searchCommitteeMember = function (req, res) {
             if (err)
                 res.send(err);
             res.json(data);
+            console.log(data);
         });
     }
     var _a;
