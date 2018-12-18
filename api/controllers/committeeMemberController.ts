@@ -131,7 +131,7 @@ exports.searchCommitteeMember = function (req, res) {
             }, {
                 $unwind: { path: "$CommitteeMemberData" }
             },
-            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1,'MemberType':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData':'$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
+            { $project: { 'CommitteeMemberDesignation': 1,'CommitteeMemberId':1,'MemberId': 1,'MemberType':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData':'$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
             { $match: { 'name': regex }},
         ]).exec(function (err, data) {
             if (err)
@@ -177,7 +177,6 @@ exports.searchCommitteeMember = function (req, res) {
             if (err)
                 res.send(err);
             res.json(data);
-            console.log(data);
         });
     }
 }

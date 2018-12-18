@@ -20,7 +20,7 @@ module.exports = function (app) {
             || req.url.startsWith('/getfamilymembers') || req.url.startsWith('/familyMemberById') || req.url.startsWith('/bannerWithPhotos') || req.url.startsWith('/bannerphoto')
             || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage')
             || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage') || req.url.startsWith('/authenticateMemberMobile')
-            || req.url.startsWith('/recentlyJoinedMembers')) {
+            || req.url.startsWith('/recentlyJoinedMembers') || req.url.startsWith('/statisticsInfo') || req.url.startsWith('/upcomingEvent')) {
             next();
         }
         else {
@@ -189,6 +189,8 @@ module.exports = function (app) {
     //client side routes
     app.route('/eventwithphotos')
         .get(clientSideController.joinEventModelWithPhotos);
+    app.route('/upcomingEvent')
+        .get(clientSideController.upcomingEvent);
     app.route('/bannerWithPhotos')
         .get(clientSideController.joinBannersWithPhotos);
     app.route('/bannerphoto/:BannerId/:fileName')
@@ -203,6 +205,8 @@ module.exports = function (app) {
         .get(clientSideController.getAllFamilyMembers);
     app.route('/allmembers')
         .get(clientSideController.getAllMembers);
+    app.route('/statisticsInfo')
+        .get(clientSideController.getStatisticsInfo);
     app.route('/recentlyJoinedMembers')
         .get(clientSideController.getRecentlyJoinedMembers);
     app.route('/getFamilyMemberImage/:memberId/:fMemberId/:fileName')

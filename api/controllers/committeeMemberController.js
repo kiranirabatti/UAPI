@@ -163,7 +163,6 @@ exports.searchCommitteeMember = function (req, res) {
             if (err)
                 res.send(err);
             res.json(data);
-            console.log(data);
         });
     }
     var _a;

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'), eventManagement = mongoose.model('EventManagement'), eventPhoto = mongoose.model('EventPhotos'), advertisement = mongoose.model('Advertisement'), member = mongoose.model('Member'), familyMember = mongoose.model('FamilyMember'), Committee = mongoose.model('CommitteeMember'), city = mongoose.model('City'), citizenship = mongoose.model('Citizenship'), education = mongoose.model('Education'), height = mongoose.model('Height'), native = mongoose.model('Native'), advertisementPhoto = mongoose.model('AdvertisementPhotos'), advertisementType = mongoose.model('AdvertisementType'), advertisementLocation = mongoose.model('AdvertisementLocation'), bannerManagement = mongoose.model('BannerManagement'), bannerPhoto = mongoose.model('BannerPhoto'), path = require('path'), otpAuthentication = mongoose.model('OTPAuthentication'), fs = require('fs'), config = require('../../Config');
 var randomNum = require("crypto");
+var moment = require('moment');
 exports.joinEventModelWithPhotos = function (req, res) {
     eventManagement.aggregate([
         {
@@ -29,7 +30,7 @@ exports.joinEventModelWithPhotos = function (req, res) {
         },
         {
             $sort: { date: 1 }
-        },
+        }
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -94,10 +95,17 @@ exports.getAllFamilyMembers = function (req, res) {
     });
 };
 exports.getAllMembers = function (req, res) {
-    member.find({}, function (err, member) {
+    //member.find({}, function (err, member) {
+    //    if (err)
+    //        res.send(err);
+    //    res.json(member);
+    //});
+    member.aggregate([
+        { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1, 'FileName': 1 } },
+    ]).exec(function (err, data) {
         if (err)
             res.send(err);
-        res.json(member);
+        res.json(data);
     });
 };
 exports.searchMember = function (req, res) {
@@ -105,11 +113,23 @@ exports.searchMember = function (req, res) {
     var regex = new RegExp(req.params.searchvalue, 'i');
     var query = {};
     query[fieldName] = regex;
-    member.find(query, function (err, member) {
+    member.aggregate([
+        {
+            $match: query
+        },
+        { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1, 'FileName': 1 } },
+    ]).exec(function (err, data) {
         if (err)
             res.send(err);
-        res.json(member);
+        res.json(data);
     });
+    //member.find(
+    //    query
+    //    , function (err, member) {
+    //        if (err)
+    //            res.send(err);
+    //        res.json(member);
+    //    });
 };
 exports.getMemberbyId = function (req, res) {
     member.find({ MemberId: req.params.MemberId }, function (err, member) {
@@ -465,10 +485,7 @@ exports.getAllCommitteeMembers = function (req, res) {
     });
 };
 exports.searchCommitteeMember = function (req, res) {
-    console.log(req.params);
     var commiteeMemberType = req.params.memberTypeValue == 'All' ? '' : req.params.memberTypeValue;
-    console.log("type");
-    console.log(commiteeMemberType);
     var searchValue = req.params.searchValue;
     var fieldName = req.params.fieldName;
     var regex = new RegExp(req.params.searchValue, 'i');
@@ -485,10 +502,6 @@ exports.searchCommitteeMember = function (req, res) {
     if (fieldName == 'DesignationData.Designation') {
         query["DesignationData.Designation"] = regex;
     }
-    //if (req.params.memberTypeValue != 'null') {
-    //    query[fieldName] = regex;
-    //}
-    console.log(query);
     if (fieldName == 'CommitteeMemberData.FullName') {
         Committee.aggregate([
             {
@@ -548,10 +561,6 @@ exports.searchCommitteeMember = function (req, res) {
                 }
             },
             {
-                //$match: {
-                //                [fieldName]: regex,
-                //                'MemberType': commiteeMemberType
-                //}
                 $match: query
             }, {
                 $unwind: { path: "$DesignationData" }
@@ -621,6 +630,79 @@ exports.getRecentlyJoinedMembers = function (req, res) {
     member.aggregate([
         {
             $sort: { _id: -1 },
+        },
+        {
+            $limit: 3
+        }
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
+};
+exports.getStatisticsInfo = function (req, res) {
+    var Male = 0;
+    var Female = 0;
+    var MemberCount = 0;
+    member.find({}, function (err, member) {
+        if (err)
+            res.send(err);
+        else
+            MemberCount = member.length;
+        for (var i = 0; i < member.length; i++) {
+            if (member[i].Gender) {
+                member[i].Gender.toLowerCase() == 'male' ? Male++ : Female++;
+            }
+        }
+    });
+    familyMember.find({}, function (err, familymember) {
+        if (err)
+            res.send(err);
+        else
+            for (var i = 0; i < familymember.length; i++) {
+                if (familymember[i].Gender) {
+                    familymember[i].Gender.toLowerCase() == 'male' ? Male++ : Female++;
+                }
+            }
+        res.json({ memberCont: MemberCount, familyMemberCount: familymember.length, maleCount: Male, femaleCount: Female });
+    });
+};
+exports.upcomingEvent = function (req, res) {
+    var currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    eventManagement.aggregate([
+        {
+            $lookup: {
+                from: 'EventPhotos',
+                localField: 'EventId',
+                foreignField: 'EventId',
+                as: 'EventWithPhoto'
+            }
+        },
+        {
+            $project: {
+                date: {
+                    $dateFromString: {
+                        dateString: '$EventDate'
+                    }
+                },
+                EventDescription: '$EventDescription',
+                EventDate: '$EventDate',
+                EventVenue: '$EventVenue',
+                IsPublished: '$IsPublished',
+                EventName: '$EventName',
+                IsActive: '$IsActive',
+                EventId: '$EventId',
+                EventWithPhoto: '$EventWithPhoto',
+            }
+        },
+        {
+            $match: {
+                date: { $gte: currentDate }
+            }
+        },
+        {
+            $sort: { date: 1 }
         },
         {
             $limit: 3

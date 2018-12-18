@@ -15,23 +15,24 @@
     advertisementLocation = mongoose.model('AdvertisementLocation'),
     bannerManagement = mongoose.model('BannerManagement'),
     bannerPhoto = mongoose.model('BannerPhoto'),
-	path = require('path'),
-	otpAuthentication = mongoose.model('OTPAuthentication'),
+    path = require('path'),
+    otpAuthentication = mongoose.model('OTPAuthentication'),
     fs = require('fs'),
     config = require('../../Config');
 const randomNum = require("crypto");
+var moment = require('moment');
 
 
 exports.joinEventModelWithPhotos = function (req, res) {
-	eventManagement.aggregate([
-		{
-			$lookup:
-				{
-					from: 'EventPhotos',
-					localField: 'EventId',
-					foreignField: 'EventId',
-					as: 'EventWithPhoto'
-				}
+    eventManagement.aggregate([
+        {
+            $lookup:
+            {
+                from: 'EventPhotos',
+                localField: 'EventId',
+                foreignField: 'EventId',
+                as: 'EventWithPhoto'
+            }
         },
         {
             $project: {
@@ -41,7 +42,7 @@ exports.joinEventModelWithPhotos = function (req, res) {
                     }
                 },
                 EventDescription: '$EventDescription',
-                EventDate: '$EventDate',
+                EventDate:'$EventDate',
                 EventVenue: '$EventVenue',
                 IsPublished: '$IsPublished',
                 EventName: '$EventName',
@@ -51,27 +52,27 @@ exports.joinEventModelWithPhotos = function (req, res) {
             }
         },
         {
-            $sort: { date: 1 } 
-        },
+            $sort: { date: 1 }
+        }
     ]).exec(function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 }
 
 exports.getEventPhotos = function (req, res) {
-	var fileLocation = './Photos/Event/' + req.params.EventId + '/' + req.params.FileName;
-	if (fs.existsSync(fileLocation)) {
-		res.sendFile(path.resolve(fileLocation));
-	}
+    var fileLocation = './Photos/Event/' + req.params.EventId + '/' + req.params.FileName;
+    if (fs.existsSync(fileLocation)) {
+        res.sendFile(path.resolve(fileLocation));
+    }
 }
 
 exports.getAdvertisementPhoto = function (req, res) {
-	var fileLocation = './Photos/Advertisement/' + req.params.AdvertisementId + '/' + req.params.FileName;
-	if (fs.existsSync(fileLocation)) {
-		res.sendFile(path.resolve(fileLocation));
-	}
+    var fileLocation = './Photos/Advertisement/' + req.params.AdvertisementId + '/' + req.params.FileName;
+    if (fs.existsSync(fileLocation)) {
+        res.sendFile(path.resolve(fileLocation));
+    }
 }
 
 exports.getAllAdvertisements = function (req, res) {
@@ -117,41 +118,58 @@ exports.getAllAdvertisements = function (req, res) {
 };
 
 exports.getAllFamilyMembers = function (req, res) {
-	familyMember.find({}, function (err, member) {
-		if (err)
-			res.send(err);
-		res.json(member);
-	});
+    familyMember.find({}, function (err, member) {
+        if (err)
+            res.send(err);
+        res.json(member);
+    });
 };
 
 exports.getAllMembers = function (req, res) {
-	member.find({}, function (err, member) {
-		if (err)
-			res.send(err);
-		res.json(member);
-	});
+    //member.find({}, function (err, member) {
+    //    if (err)
+    //        res.send(err);
+    //    res.json(member);
+    //});
+    member.aggregate([
+        { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1,'FileName':1 } },
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.searchMember = function (req, res) {
-	var fieldName = req.params.fieldname;
-	var regex = new RegExp(req.params.searchvalue, 'i');
-	var query = {};
-	query[fieldName] = regex;
-	member.find(
-		query
-		, function (err, member) {
-			if (err)
-				res.send(err);
-			res.json(member);
-		});
+    var fieldName = req.params.fieldname;
+    var regex = new RegExp(req.params.searchvalue, 'i');
+    var query = {};
+    query[fieldName] = regex;
+    member.aggregate([
+        {
+            $match: query
+        }, 
+        { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1,'FileName':1 } },
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
+    //member.find(
+    //    query
+    //    , function (err, member) {
+    //        if (err)
+    //            res.send(err);
+    //        res.json(member);
+    //    });
 };
 
 exports.getMemberbyId = function (req, res) {
-	member.find({ MemberId: req.params.MemberId }, function (err, member) {
-		if (err)
-			res.send(err);
-		res.json(member);
-	});
+    member.find({ MemberId: req.params.MemberId }, function (err, member) {
+        if (err)
+            res.send(err);
+        res.json(member);
+    });
 };
 
 exports.updateMemberProfile = function (req, res) {
@@ -159,18 +177,18 @@ exports.updateMemberProfile = function (req, res) {
         GUID = randomNum.randomBytes(16).toString("hex"),
         extension = req.body.FileName.slice((req.body.FileName.lastIndexOf(".") - 1 >>> 0) + 2),
         flag = false;
-        if (req.body.Image.startsWith(config.nodeURL + '/getDefaultMemberImage')) {
-         flag = true;
-        }
-        req.body.UpdatedOn = date;
-        
-        if (!flag) {
-            req.body.FileNameInFolder = GUID + '.' + extension;
-        }
-        else {
-            req.body.FileNameInFolder = req.body.OldFileName
-        }
-        member.findOneAndUpdate({ MemberId: req.params.MemberId }, { 'FullName': req.body.FullName, 'MobileNo': req.body.MobileNo, 'Email': req.body.email, 'Address': req.body.Address, 'OldFileName': req.body.OldFileName, 'Image': req.body.Image, 'FileNameInFolder': req.body.FileNameInFolder, 'FileName': req.body.FileName }, { new: true }, function (err, member) {
+    if (req.body.Image.startsWith(config.nodeURL + '/getDefaultMemberImage')) {
+        flag = true;
+    }
+    req.body.UpdatedOn = date;
+
+    if (!flag) {
+        req.body.FileNameInFolder = GUID + '.' + extension;
+    }
+    else {
+        req.body.FileNameInFolder = req.body.OldFileName
+    }
+    member.findOneAndUpdate({ MemberId: req.params.MemberId }, { 'FullName': req.body.FullName, 'MobileNo': req.body.MobileNo, 'Email': req.body.email, 'Address': req.body.Address, 'OldFileName': req.body.OldFileName, 'Image': req.body.Image, 'FileNameInFolder': req.body.FileNameInFolder, 'FileName': req.body.FileName }, { new: true }, function (err, member) {
         if (err)
             res.send(err);
         res.json(member);
@@ -218,10 +236,10 @@ exports.getFamilyMemberbyId = function (req, res) {
 };
 
 exports.getFamilyMemberImage = function (req, res) {
-	var FileLocation = './Photos/FamilyMembers/' + req.params.memberId + '/' + req.params.fMemberId + '/' + req.params.fileName;
-	if (fs.existsSync(FileLocation)) {
-		res.sendFile(path.resolve(FileLocation));
-	}
+    var FileLocation = './Photos/FamilyMembers/' + req.params.memberId + '/' + req.params.fMemberId + '/' + req.params.fileName;
+    if (fs.existsSync(FileLocation)) {
+        res.sendFile(path.resolve(FileLocation));
+    }
 };
 
 exports.updateFamilyMemberProfile = function (req, res) {
@@ -262,7 +280,7 @@ exports.updateFamilyMemberProfile = function (req, res) {
                 if (fs.existsSync(FilePath) && req.body.OldFileName) {
                     fs.unlinkSync(FilePath);
                 }
-                 var base64Data = req.body.Image.replace(/^data:image\/\w+;base64,/, "");
+                var base64Data = req.body.Image.replace(/^data:image\/\w+;base64,/, "");
                 fs.writeFile((newDir + "/" + GUID + '.' + extension), base64Data, 'base64', function (err) {
                     console.log(err);
                 });
@@ -272,239 +290,239 @@ exports.updateFamilyMemberProfile = function (req, res) {
 };
 
 exports.getStaticImage = function (req, res) {
-	res.sendFile(path.resolve('./Photos/profile-picture.png'));
+    res.sendFile(path.resolve('./Photos/profile-picture.png'));
 };
 
 exports.sendMemberPhoto = function (req, res) {
-	var fileLocation = './Photos/Members/' + req.params.MemberId + '/' + req.params.fileName;
-	if (fs.existsSync(fileLocation)) {
-		res.sendFile(path.resolve(fileLocation));
-	}
+    var fileLocation = './Photos/Members/' + req.params.MemberId + '/' + req.params.fileName;
+    if (fs.existsSync(fileLocation)) {
+        res.sendFile(path.resolve(fileLocation));
+    }
 };
 
 exports.getAllCities = function (req, res) {
-	city.find({}, function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    city.find({}, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.getAllCitizens = function (req, res) {
-	citizenship.find({}, function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    citizenship.find({}, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.getAllEducations = function (req, res) {
-	education.find({}, function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    education.find({}, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.getAllHeights = function (req, res) {
-	height.find({}, function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    height.find({}, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.getAllNativePlaces = function (req, res) {
-	native.find({}, function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    native.find({}, function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.getAllMatrimonialMembers = function (req, res) {
     familyMember.aggregate([
         { $match: { "LookingForPartner": "Yes" } },
-		{
-			$lookup:
-				{
-					from: 'Height',
-					localField: 'PartnerHeight',
-					foreignField: 'HeightId',
-					as: 'HeightData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'City',
-					localField: 'City',
-					foreignField: 'CityId',
-					as: 'CityData'
-				},
-		},
-		{
-			$lookup:
-				{
-					from: 'Citizenship',
-					localField: 'Citizenship',
-					foreignField: 'CitizenshipId',
-					as: 'CitizenshipData'
-				},
-		},
-		{
-			$lookup:
-				{
-					from: 'Native',
-					localField: 'Native',
-					foreignField: 'NativeId',
-					as: 'NativeData'
-				},
-		},
-		{
-			$lookup:
-				{
-					from: 'Education',
-					localField: 'Education',
-					foreignField: 'EducationId',
-					as: 'EducationData'
-				},
+        {
+            $lookup:
+            {
+                from: 'Height',
+                localField: 'PartnerHeight',
+                foreignField: 'HeightId',
+                as: 'HeightData'
+            }
         },
-	]).exec(function (err, data) {
-		if (err)
-			res.send(err);
+        {
+            $lookup:
+            {
+                from: 'City',
+                localField: 'City',
+                foreignField: 'CityId',
+                as: 'CityData'
+            },
+        },
+        {
+            $lookup:
+            {
+                from: 'Citizenship',
+                localField: 'Citizenship',
+                foreignField: 'CitizenshipId',
+                as: 'CitizenshipData'
+            },
+        },
+        {
+            $lookup:
+            {
+                from: 'Native',
+                localField: 'Native',
+                foreignField: 'NativeId',
+                as: 'NativeData'
+            },
+        },
+        {
+            $lookup:
+            {
+                from: 'Education',
+                localField: 'Education',
+                foreignField: 'EducationId',
+                as: 'EducationData'
+            },
+        },
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
         res.json(data);
-	});
+    });
 }
 
 exports.getMatrimonialResult = function (req, res) {
-	var manglik = req.params.manglik;
-	var handicap = (req.params.handicap == 'true');
-	var fromAge = req.params.fromAge;
-	var toAge = req.params.toAge;
-    var gender = new RegExp("^" + req.params.gender+ "$", "i");
-    var martial =req.params.martial;
-	var city = req.params.city;
-	var education = req.params.education;
-	var citizenShip = req.params.citizenShip;
-	var native = req.params.native;
-	var height = req.params.height;
-	var myMatch = {
-		LookingForPartner: "Yes",
-        MaritalStatus: { "$ne": "married" || "Married"}
-	};
+    var manglik = req.params.manglik;
+    var handicap = (req.params.handicap == 'true');
+    var fromAge = req.params.fromAge;
+    var toAge = req.params.toAge;
+    var gender = new RegExp("^" + req.params.gender + "$", "i");
+    var martial = req.params.martial;
+    var city = req.params.city;
+    var education = req.params.education;
+    var citizenShip = req.params.citizenShip;
+    var native = req.params.native;
+    var height = req.params.height;
+    var myMatch = {
+        LookingForPartner: "Yes",
+        MaritalStatus: { "$ne": "married" || "Married" }
+    };
 
-	if (req.params.fromAge != 'null') {
-		if (req.params.toAge != 'null')
-			myMatch["Age"] = { "$gte": +parseInt(fromAge), "$lte": parseInt(toAge) };
-		else
-			myMatch["Age"] = { "$gte": +parseInt(fromAge) };
-	}
+    if (req.params.fromAge != 'null') {
+        if (req.params.toAge != 'null')
+            myMatch["Age"] = { "$gte": +parseInt(fromAge), "$lte": parseInt(toAge) };
+        else
+            myMatch["Age"] = { "$gte": +parseInt(fromAge) };
+    }
 
-	if (req.params.manglik != 'null') {
-		myMatch["Manglik"] = manglik;
-	}
+    if (req.params.manglik != 'null') {
+        myMatch["Manglik"] = manglik;
+    }
 
-	if (req.params.martial != 'null') {
-		myMatch["MaritalStatus"] = martial;
-	}
+    if (req.params.martial != 'null') {
+        myMatch["MaritalStatus"] = martial;
+    }
 
-	if (req.params.gender != 'null') {
-		myMatch["Gender"] = gender;
-	}
+    if (req.params.gender != 'null') {
+        myMatch["Gender"] = gender;
+    }
 
-	if (req.params.education != 'null') {
-		myMatch["Education"] = parseInt(education);
-	}
+    if (req.params.education != 'null') {
+        myMatch["Education"] = parseInt(education);
+    }
 
-	if (req.params.city != 'null') {
-		myMatch["City"] = parseInt(city);
-	}
+    if (req.params.city != 'null') {
+        myMatch["City"] = parseInt(city);
+    }
 
-	if (req.params.citizenShip != 'null') {
-		myMatch["Citizenship"] = parseInt(citizenShip);
-	}
+    if (req.params.citizenShip != 'null') {
+        myMatch["Citizenship"] = parseInt(citizenShip);
+    }
 
-	if (req.params.native != 'null') {
-		myMatch["Native"] = parseInt(native);
-	}
+    if (req.params.native != 'null') {
+        myMatch["Native"] = parseInt(native);
+    }
 
-	if (req.params.height != 'null') {
-		myMatch["PartnerHeight"] = parseInt(height);
-	}
+    if (req.params.height != 'null') {
+        myMatch["PartnerHeight"] = parseInt(height);
+    }
 
-	if (req.params.handicap != 'null') {
-		myMatch["Handicaped"] = handicap;
-	}
-	var query1 = ([
-		{
-			$match: myMatch
-		},
-		{
-			$lookup:
-				{
-					from: 'Height',
-					localField: 'PartnerHeight',
-					foreignField: 'HeightId',
-					as: 'HeightData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'Citizenship',
-					localField: 'Citizenship',
-					foreignField: 'CitizenshipId',
-					as: 'CitizenshipData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'City',
-					localField: 'City',
-					foreignField: 'CityId',
-					as: 'CityData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'Education',
-					localField: 'Education',
-					foreignField: 'EducationId',
-					as: 'EducationData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'Native',
-					localField: 'Native',
-					foreignField: 'NativeId',
-					as: 'NativeData'
-				}
-		},
-		{
-			"$project": {
-				"HeightData._id": 0,
-				"HeightData.HeightId": 0,
-				"CitizenshipData._id": 0,
-				"CitizenshipData.CitizenshipId": 0,
-				"CityData._id": 0,
-				"CityData.CityId": 0,
-				"EducationData._id": 0,
-				"EducationData.EducationId": 0,
-				"NativeData._id": 0,
+    if (req.params.handicap != 'null') {
+        myMatch["Handicaped"] = handicap;
+    }
+    var query1 = ([
+        {
+            $match: myMatch
+        },
+        {
+            $lookup:
+            {
+                from: 'Height',
+                localField: 'PartnerHeight',
+                foreignField: 'HeightId',
+                as: 'HeightData'
+            }
+        },
+        {
+            $lookup:
+            {
+                from: 'Citizenship',
+                localField: 'Citizenship',
+                foreignField: 'CitizenshipId',
+                as: 'CitizenshipData'
+            }
+        },
+        {
+            $lookup:
+            {
+                from: 'City',
+                localField: 'City',
+                foreignField: 'CityId',
+                as: 'CityData'
+            }
+        },
+        {
+            $lookup:
+            {
+                from: 'Education',
+                localField: 'Education',
+                foreignField: 'EducationId',
+                as: 'EducationData'
+            }
+        },
+        {
+            $lookup:
+            {
+                from: 'Native',
+                localField: 'Native',
+                foreignField: 'NativeId',
+                as: 'NativeData'
+            }
+        },
+        {
+            "$project": {
+                "HeightData._id": 0,
+                "HeightData.HeightId": 0,
+                "CitizenshipData._id": 0,
+                "CitizenshipData.CitizenshipId": 0,
+                "CityData._id": 0,
+                "CityData.CityId": 0,
+                "EducationData._id": 0,
+                "EducationData.EducationId": 0,
+                "NativeData._id": 0,
                 "NativeData.NativeId": 0,
-			}
-		}
-	]);
-	familyMember.aggregate(query1).exec(function (err, data) {
-		if (err)
-			res.send(err);
+            }
+        }
+    ]);
+    familyMember.aggregate(query1).exec(function (err, data) {
+        if (err)
+            res.send(err);
         res.json(data);
-	});
+    });
 };
 
 exports.matrimonialDefaultImage = function (req, res) {
@@ -512,55 +530,52 @@ exports.matrimonialDefaultImage = function (req, res) {
 };
 
 exports.getAllCommitteeMembers = function (req, res) {
-	Committee.aggregate([
-		{
-			$lookup:
-				{
-					from: 'Member',
-					localField: 'MemberId',
-					foreignField: '_id',
-					as: 'CommitteeMemberData'
-				}
-		},
-		{
-			$lookup:
-				{
-					from: 'Designation',
-					localField: 'CommitteeMemberDesignation',
-					foreignField: 'DesignationId',
-					as: 'DesignationData'
-				},
-		},
-		{
-			"$sort": {
-				"DesignationData.DesignationId": 1
-			}
-		}, {
-			$unwind: { path: "$DesignationData" }
-		}, {
-			$unwind: { path: "$CommitteeMemberData" }
-		}
-	]).exec(function (err, data) {
-		if (err)
-			res.send(err);
-		res.json(data);
-	});
+    Committee.aggregate([
+        {
+            $lookup:
+            {
+                from: 'Member',
+                localField: 'MemberId',
+                foreignField: '_id',
+                as: 'CommitteeMemberData'
+            }
+        },
+        {
+            $lookup:
+            {
+                from: 'Designation',
+                localField: 'CommitteeMemberDesignation',
+                foreignField: 'DesignationId',
+                as: 'DesignationData'
+            },
+        },
+        {
+            "$sort": {
+                "DesignationData.DesignationId": 1
+            }
+        }, {
+            $unwind: { path: "$DesignationData" }
+        }, {
+            $unwind: { path: "$CommitteeMemberData" }
+        }
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
 };
 
 exports.searchCommitteeMember = function (req, res) {
-    console.log(req.params)
     var commiteeMemberType = req.params.memberTypeValue == 'All' ? '' : req.params.memberTypeValue;
-    console.log("type");
-    console.log(commiteeMemberType)
-	var searchValue = req.params.searchValue;
-	var fieldName = req.params.fieldName;
-	var regex = new RegExp(req.params.searchValue, 'i');
-	var query = {};
+    var searchValue = req.params.searchValue;
+    var fieldName = req.params.fieldName;
+    var regex = new RegExp(req.params.searchValue, 'i');
+    var query = {};
 
     if (req.params.memberTypeValue != 'null') {
         query["MemberType"] = req.params.memberTypeValue;
     }
-    if (fieldName== 'CommitteeMemberData.FullName') {
+    if (fieldName == 'CommitteeMemberData.FullName') {
         query["name"] = regex;
     }
     if (fieldName == 'CommitteeMemberData.Email') {
@@ -569,125 +584,117 @@ exports.searchCommitteeMember = function (req, res) {
     if (fieldName == 'DesignationData.Designation') {
         query["DesignationData.Designation"] = regex;
     }
-    //if (req.params.memberTypeValue != 'null') {
-    //    query[fieldName] = regex;
-    //}
-    console.log(query)
-	if (fieldName == 'CommitteeMemberData.FullName') {
-		Committee.aggregate([
-			{
-				$lookup:
-					{
-						from: 'Member',
-						localField: 'MemberId',
-						foreignField: '_id',
-						as: 'CommitteeMemberData'
-					}
-			},
-			{
-				$lookup:
-					{
-						from: 'Designation',
-						localField: 'CommitteeMemberDesignation',
-						foreignField: 'DesignationId',
-						as: 'DesignationData'
-					},
-			},
-			{
-				"$sort": {
-					"DesignationData.DesignationId": 1
-				}
-			}, {
-				$unwind: { path: "$DesignationData" }
-			}, {
-				$unwind: { path: "$CommitteeMemberData" }
-			},
-            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'MemberType':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name:"$CommitteeMemberData.FullName" } },
+    if (fieldName == 'CommitteeMemberData.FullName') {
+        Committee.aggregate([
+            {
+                $lookup:
+                {
+                    from: 'Member',
+                    localField: 'MemberId',
+                    foreignField: '_id',
+                    as: 'CommitteeMemberData'
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'Designation',
+                    localField: 'CommitteeMemberDesignation',
+                    foreignField: 'DesignationId',
+                    as: 'DesignationData'
+                },
+            },
+            {
+                "$sort": {
+                    "DesignationData.DesignationId": 1
+                }
+            }, {
+                $unwind: { path: "$DesignationData" }
+            }, {
+                $unwind: { path: "$CommitteeMemberData" }
+            },
+            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'MemberType': 1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name: "$CommitteeMemberData.FullName" } },
             { $match: query },
-		]).exec(function (err, data) {
-			if (err)
-				res.send(err);
+        ]).exec(function (err, data) {
+            if (err)
+                res.send(err);
             res.json(data);
-		});
-	}
-	else {
-		Committee.aggregate([
-			{
-				$lookup:
-					{
-						from: 'Member',
-						localField: 'MemberId',
-						foreignField: '_id',
-						as: 'CommitteeMemberData'
-					}
-			},
-			{
-				$lookup:
-					{
-						from: 'Designation',
-						localField: 'CommitteeMemberDesignation',
-						foreignField: 'DesignationId',
-						as: 'DesignationData'
-					},
-			},
-			{
-				"$sort": {
-					"DesignationData.DesignationId": 1
-				}
-			},
-			{
-				//$match: {
-    //                [fieldName]: regex,
-    //                'MemberType': commiteeMemberType
-                //}
+        });
+    }
+    else {
+        Committee.aggregate([
+            {
+                $lookup:
+                {
+                    from: 'Member',
+                    localField: 'MemberId',
+                    foreignField: '_id',
+                    as: 'CommitteeMemberData'
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'Designation',
+                    localField: 'CommitteeMemberDesignation',
+                    foreignField: 'DesignationId',
+                    as: 'DesignationData'
+                },
+            },
+            {
+                "$sort": {
+                    "DesignationData.DesignationId": 1
+                }
+            },
+            {
                 $match: query
-			}, {
-				$unwind: { path: "$DesignationData" }
-			}, {
-				$unwind: { path: "$CommitteeMemberData" }
-			}
-		]).exec(function (err, data) {
-			if (err)
-				res.send(err);
-			res.json(data);
-		});
-	}
+            }, {
+                $unwind: { path: "$DesignationData" }
+            }, {
+                $unwind: { path: "$CommitteeMemberData" }
+            }
+        ]).exec(function (err, data) {
+            if (err)
+                res.send(err);
+            res.json(data);
+        });
+    }
 }
 
 exports.getMatrimonialGirltImage = function (req, res) {
-	res.sendFile(path.resolve('./Photos/matrimonialGirlImage.png'));
+    res.sendFile(path.resolve('./Photos/matrimonialGirlImage.png'));
 };
 
 exports.getEventImage = function (req, res) {
-	res.sendFile(path.resolve('./Photos/defaultEventImage.jpg'));
+    res.sendFile(path.resolve('./Photos/defaultEventImage.jpg'));
 };
 
 exports.checkMember = function (req, res) {
-	var email = req.params.email;
-	var otp = req.params.otp;
-	otpAuthentication.find({
-		EmailAddress: email
-	},
-		['type', 'CreatedTime', 'OTP', 'EmailAddress', 'ExpiredTime'],
-		{
-			skip: 0,
-			limit: 1,
-			sort: {
-				CreatedTime: -1
-			}
-		},
-		function (err, data) {
-			if (err)
-				res.status(500).send('Internal server error');
-			else if (data) {
-				if (data[0].OTP == otp)
-					res.send(data);
-				else
-					res.send('OTP is not valid');
-			}
-			else
-				res.send('Email is not found');
-		})
+    var email = req.params.email;
+    var otp = req.params.otp;
+    otpAuthentication.find({
+        EmailAddress: email
+    },
+        ['type', 'CreatedTime', 'OTP', 'EmailAddress', 'ExpiredTime'],
+        {
+            skip: 0,
+            limit: 1,
+            sort: {
+                CreatedTime: -1
+            }
+        },
+        function (err, data) {
+            if (err)
+                res.status(500).send('Internal server error');
+            else if (data) {
+                if (data[0].OTP == otp)
+                    res.send(data);
+                else
+                    res.send('OTP is not valid');
+            }
+            else
+                res.send('Email is not found');
+        })
 };
 
 exports.joinBannersWithPhotos = function (req, res) {
@@ -716,16 +723,95 @@ exports.getBannerPhoto = function (req, res) {
 };
 
 exports.getRecentlyJoinedMembers = function (req, res) {
-        member.aggregate([
-            {
-                $sort: { _id: -1 },
-            },
-            {
-                $limit: 3
-            }
+    member.aggregate([
+        {
+            $sort: { _id: -1 },
+        },
+        {
+            $limit: 3
+        }
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
         res.json(data);
     });
 };
+
+exports.getStatisticsInfo = function (req, res) {
+    var Male = 0;
+    var Female = 0;
+    var MemberCount = 0;
+    member.find({}, function (err, member) {
+        if (err)
+            res.send(err);
+        else
+            MemberCount = member.length;
+        for (var i = 0; i < member.length; i++) {
+            if (member[i].Gender) {
+                member[i].Gender.toLowerCase() == 'male' ? Male++ : Female++;
+            }
+        }
+    });
+
+    familyMember.find({}, function (err, familymember) {
+        if (err)
+            res.send(err);
+        else
+            for (var i = 0; i < familymember.length; i++) {
+                if (familymember[i].Gender) {
+                    familymember[i].Gender.toLowerCase() == 'male' ? Male++ : Female++;
+                }
+            }
+        res.json({ memberCont: MemberCount, familyMemberCount: familymember.length, maleCount: Male, femaleCount: Female });
+    });
+
+};
+
+exports.upcomingEvent = function (req, res) {
+    var currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+    eventManagement.aggregate([
+
+        {
+            $lookup:
+            {
+                from: 'EventPhotos',
+                localField: 'EventId',
+                foreignField: 'EventId',
+                as: 'EventWithPhoto'
+            }
+        },
+        {
+            $project: {
+                date: {
+                    $dateFromString: {
+                        dateString: '$EventDate'
+                    }
+                },
+                EventDescription: '$EventDescription',
+                EventDate: '$EventDate',
+                EventVenue: '$EventVenue',
+                IsPublished: '$IsPublished',
+                EventName: '$EventName',
+                IsActive: '$IsActive',
+                EventId: '$EventId',
+                EventWithPhoto: '$EventWithPhoto',
+            }
+        },
+        {
+            $match: {
+                date: { $gte: currentDate }
+            }
+        },
+        {
+            $sort: { date: 1 }
+        },
+        {
+            $limit: 3
+        }
+    ]).exec(function (err, data) {
+        if (err)
+            res.send(err);
+        res.json(data);
+    });
+}
