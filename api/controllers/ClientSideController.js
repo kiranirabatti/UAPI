@@ -95,11 +95,6 @@ exports.getAllFamilyMembers = function (req, res) {
     });
 };
 exports.getAllMembers = function (req, res) {
-    //member.find({}, function (err, member) {
-    //    if (err)
-    //        res.send(err);
-    //    res.json(member);
-    //});
     member.aggregate([
         { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1, 'FileName': 1 } },
     ]).exec(function (err, data) {
@@ -123,13 +118,6 @@ exports.searchMember = function (req, res) {
             res.send(err);
         res.json(data);
     });
-    //member.find(
-    //    query
-    //    , function (err, member) {
-    //        if (err)
-    //            res.send(err);
-    //        res.json(member);
-    //    });
 };
 exports.getMemberbyId = function (req, res) {
     member.find({ MemberId: req.params.MemberId }, function (err, member) {
@@ -328,6 +316,21 @@ exports.getAllMatrimonialMembers = function (req, res) {
                 as: 'EducationData'
             },
         },
+        {
+            $project: {
+                MemberId: '$MemberId',
+                FamilyMemberId: '$FamilyMemberId',
+                Name: '$Name',
+                HeightData: '$HeightData',
+                Age: '$Age',
+                Gender: '$Gender',
+                CityData: '$CityData',
+                CitizenshipData: '$CitizenshipData',
+                FileNameInFolder: '$FileNameInFolder',
+                LookingForPartner: '$LookingForPartner',
+                MaritalStatus: '$MaritalStatus'
+            }
+        }
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -387,6 +390,18 @@ exports.getMatrimonialResult = function (req, res) {
         {
             $match: myMatch
         },
+        //{
+        //    $project:{
+        //        FamilyMemberId: '$FamilyMemberId',
+        //        MemberId:'$MemberId',
+        //        Name: '$Name',
+        //        BloodGroup: '$BloodGroup',
+        //        Email: '$Email',
+        //        FileNameInFolder: '$FileNameInFolder',
+        //        Filename: '$Filename',
+        //        Mobile:'$Mobile'
+        //    }
+        //},
         {
             $lookup: {
                 from: 'Height',
@@ -428,17 +443,20 @@ exports.getMatrimonialResult = function (req, res) {
             }
         },
         {
-            "$project": {
-                "HeightData._id": 0,
-                "HeightData.HeightId": 0,
-                "CitizenshipData._id": 0,
-                "CitizenshipData.CitizenshipId": 0,
-                "CityData._id": 0,
-                "CityData.CityId": 0,
-                "EducationData._id": 0,
-                "EducationData.EducationId": 0,
-                "NativeData._id": 0,
-                "NativeData.NativeId": 0,
+            $project: {
+                FamilyMemberId: '$FamilyMemberId',
+                MemberId: '$MemberId',
+                Name: '$Name',
+                BloodGroup: '$BloodGroup',
+                Email: '$Email',
+                FileNameInFolder: '$FileNameInFolder',
+                Filename: '$Filename',
+                Mobile: '$Mobile',
+                HeightData: "$HeightData",
+                CitizenshipData: '$CitizenshipData',
+                CityData: '$CityData',
+                EducationData: '$EducationData',
+                NativeData: '$NativeData'
             }
         }
     ]);
@@ -477,7 +495,7 @@ exports.getAllCommitteeMembers = function (req, res) {
             $unwind: { path: "$DesignationData" }
         }, {
             $unwind: { path: "$CommitteeMemberData" }
-        }
+        },
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -698,7 +716,8 @@ exports.upcomingEvent = function (req, res) {
         },
         {
             $match: {
-                date: { $gte: currentDate }
+                date: { $gte: currentDate },
+                IsActive: true
             }
         },
         {
