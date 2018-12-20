@@ -86,6 +86,7 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="api\models\committeeMemberModel.ts" />
+    <TypeScriptCompile Include="api\models\CommitteMemberType.ts" />
     <TypeScriptCompile Include="api\models\Designation.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

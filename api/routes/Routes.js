@@ -20,7 +20,7 @@ module.exports = function (app) {
             || req.url.startsWith('/getfamilymembers') || req.url.startsWith('/familyMemberById') || req.url.startsWith('/bannerWithPhotos') || req.url.startsWith('/bannerphoto')
             || req.url.startsWith('/totalMemberImage') || req.url.startsWith('/totalFamilyMemberImage') || req.url.startsWith('/totalCommiteeMemberImage')
             || req.url.startsWith('/totalEventImage') || req.url.startsWith('/getDefaultMemberImage') || req.url.startsWith('/authenticateMemberMobile')
-            || req.url.startsWith('/recentlyJoinedMembers') || req.url.startsWith('/statisticsInfo') || req.url.startsWith('/upcomingEvent')) {
+            || req.url.startsWith('/recentlyJoinedMembers') || req.url.startsWith('/statisticsInfo') || req.url.startsWith('/upcomingEvent') || req.url.startsWith('/committeeMemberType')) {
             next();
         }
         else {
@@ -53,6 +53,8 @@ module.exports = function (app) {
         .get(committeeList.searchCommitteeMember);
     app.route('/Designation')
         .get(committeeList.getAllDesignation);
+    app.route('/CommitteeMemberTypes')
+        .get(committeeList.getAllCommitteeMemberTypes);
     //Family Member Registration Routes
     app.route('/familymembers')
         .get(FamilyMemberlist.getAllFamilyMembers)
@@ -238,6 +240,8 @@ module.exports = function (app) {
         .get(clientSideController.getFamilyMemberbyMemberId);
     app.route('/committeeMember')
         .get(clientSideController.getAllCommitteeMembers);
+    app.route('/committeeMemberType')
+        .get(clientSideController.getCommitteeMemberTypes);
     app.route('/searchCommitteeMember/:memberTypeValue/:fieldName/:searchValue')
         .get(clientSideController.searchCommitteeMember);
     app.route('/authenticateOTP/:MobileNumber/:OTP')

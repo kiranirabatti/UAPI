@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var committeeSchema = new Schema({
     CommitteeMemberId: { type: Number, required: true },
     CommitteeMemberDesignation: { type: Number, default: '' },
-    MemberType: { type: String, default: '' },
+    MemberType: { type: Number, default: '' },
     MemberId: { type: mongoose.Schema.Types.ObjectId, ref: 'Members' },
     CreatedOn: { type: Date, default: Date.now },
     CreatedBy: { type: String, default: '' },

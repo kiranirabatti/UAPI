@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var member = mongoose.model('Member');
 var Committee = mongoose.model('CommitteeMember');
 var Designation = mongoose.model('Designation');
+var CommitteeTypes = mongoose.model('CommitteeMemberType');
 var path = require('path');
 var jwt = require('jsonwebtoken');
 
@@ -28,14 +29,32 @@ exports.getAllCommitteeMembers = function (req, res) {
             },
         },
         {
+            $lookup:
+            {
+                from: 'CommitteeMemberType',
+                localField: 'MemberType',
+                foreignField: 'TypeId',
+                as: 'CommitteeMemberTypesData'
+            },
+        },
+        {
             "$sort": {
-                "DesignationData.DesignationId": 1
+                "CommitteeMemberTypesData.TypeId": 1,
             }
         }, {
             $unwind: { path: "$DesignationData" }
         }, {
             $unwind: { path: "$CommitteeMemberData" }
-        }
+        },
+        {
+            $unwind: { path: "$CommitteeMemberTypesData" }
+        },
+        {
+            "$sort": {
+                "DesignationData.DesignationId": 1
+
+            }
+        },
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -123,15 +142,35 @@ exports.searchCommitteeMember = function (req, res) {
                 },
             },
             {
+                $lookup:
+                {
+                    from: 'CommitteeMemberType',
+                    localField: 'MemberType',
+                    foreignField: 'TypeId',
+                    as: 'CommitteeMemberTypesData'
+                },
+            },
+            {
                 "$sort": {
-                    "DesignationData.DesignationId": 1
+                    "CommitteeMemberTypesData.TypeId": 1,
                 }
-            }, {
+            },
+            {
                 $unwind: { path: "$DesignationData" }
-            }, {
+            },
+            {
                 $unwind: { path: "$CommitteeMemberData" }
             },
-            { $project: { 'CommitteeMemberDesignation': 1,'CommitteeMemberId':1,'MemberId': 1,'MemberType':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData':'$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
+            {
+                $unwind: { path: "$CommitteeMemberTypesData" }
+            },
+            {
+                "$sort": {
+                    "DesignationData.DesignationId": 1
+
+                }
+            },
+            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1,'CommitteeMemberTypesData':1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData':'$DesignationData', name: { $concat: ["$CommitteeMemberData.FullName"] } } },
             { $match: { 'name': regex }},
         ]).exec(function (err, data) {
             if (err)
@@ -160,8 +199,17 @@ exports.searchCommitteeMember = function (req, res) {
                 },
             },
             {
+                $lookup:
+                {
+                    from: 'CommitteeMemberType',
+                    localField: 'MemberType',
+                    foreignField: 'TypeId',
+                    as: 'CommitteeMemberTypesData'
+                },
+            },
+            {
                 "$sort": {
-                    "DesignationData.DesignationId": 1
+                    "CommitteeMemberTypesData.TypeId": 1,
                 }
             },
             {
@@ -172,7 +220,16 @@ exports.searchCommitteeMember = function (req, res) {
                 $unwind: { path: "$DesignationData" }
             }, {
                 $unwind: { path: "$CommitteeMemberData" }
-            }
+            },
+            {
+                $unwind: { path: "$CommitteeMemberTypesData" }
+            },
+            {
+                "$sort": {
+                    "DesignationData.DesignationId": 1
+
+                }
+            },
         ]).exec(function (err, data) {
             if (err)
                 res.send(err);
@@ -180,3 +237,11 @@ exports.searchCommitteeMember = function (req, res) {
         });
     }
 }
+
+exports.getAllCommitteeMemberTypes = function (req, res) {
+    CommitteeTypes.find({}, function (err, CommitteeTypes) {
+        if (err)
+            res.send(err);
+        res.json(CommitteeTypes);
+    });
+};

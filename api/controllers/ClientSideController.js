@@ -469,6 +469,13 @@ exports.getMatrimonialResult = function (req, res) {
 exports.matrimonialDefaultImage = function (req, res) {
     res.sendFile(path.resolve('./Photos/MatrimonialDefaultImage.png'));
 };
+exports.getCommitteeMemberTypes = function (req, res) {
+    CommitteeTypes.find({}, function (err, CommitteeTypes) {
+        if (err)
+            res.send(err);
+        res.json(CommitteeTypes);
+    });
+};
 exports.getAllCommitteeMembers = function (req, res) {
     Committee.aggregate([
         {
@@ -488,13 +495,29 @@ exports.getAllCommitteeMembers = function (req, res) {
             },
         },
         {
+            $lookup: {
+                from: 'CommitteeMemberType',
+                localField: 'MemberType',
+                foreignField: 'TypeId',
+                as: 'CommitteeMemberTypesData'
+            },
+        },
+        {
             "$sort": {
-                "DesignationData.DesignationId": 1
+                "CommitteeMemberTypesData.TypeId": 1,
             }
         }, {
             $unwind: { path: "$DesignationData" }
         }, {
             $unwind: { path: "$CommitteeMemberData" }
+        },
+        {
+            $unwind: { path: "$CommitteeMemberTypesData" }
+        },
+        {
+            "$sort": {
+                "DesignationData.DesignationId": 1
+            }
         },
     ]).exec(function (err, data) {
         if (err)
@@ -509,7 +532,7 @@ exports.searchCommitteeMember = function (req, res) {
     var regex = new RegExp(req.params.searchValue, 'i');
     var query = {};
     if (req.params.memberTypeValue != 'null') {
-        query["MemberType"] = req.params.memberTypeValue;
+        query["CommitteeMemberTypesData.Description"] = req.params.memberTypeValue;
     }
     if (fieldName == 'CommitteeMemberData.FullName') {
         query["name"] = regex;
@@ -539,15 +562,32 @@ exports.searchCommitteeMember = function (req, res) {
                 },
             },
             {
+                $lookup: {
+                    from: 'CommitteeMemberType',
+                    localField: 'MemberType',
+                    foreignField: 'TypeId',
+                    as: 'CommitteeMemberTypesData'
+                },
+            },
+            {
                 "$sort": {
-                    "DesignationData.DesignationId": 1
+                    "CommitteeMemberTypesData.TypeId": 1,
                 }
-            }, {
+            },
+            {
                 $unwind: { path: "$DesignationData" }
             }, {
                 $unwind: { path: "$CommitteeMemberData" }
             },
-            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'MemberType': 1, 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name: "$CommitteeMemberData.FullName" } },
+            {
+                $unwind: { path: "$CommitteeMemberTypesData" }
+            },
+            {
+                "$sort": {
+                    "DesignationData.DesignationId": 1
+                }
+            },
+            { $project: { 'CommitteeMemberDesignation': 1, 'CommitteeMemberId': 1, 'MemberId': 1, 'CommitteeMemberTypesData': '$CommitteeMemberTypesData', 'CommitteeMemberData': '$CommitteeMemberData', 'DesignationData': '$DesignationData', name: "$CommitteeMemberData.FullName" } },
             { $match: query },
         ]).exec(function (err, data) {
             if (err)
@@ -574,17 +614,32 @@ exports.searchCommitteeMember = function (req, res) {
                 },
             },
             {
+                $lookup: {
+                    from: 'CommitteeMemberType',
+                    localField: 'MemberType',
+                    foreignField: 'TypeId',
+                    as: 'CommitteeMemberTypesData'
+                },
+            },
+            {
+                "$sort": {
+                    "CommitteeMemberTypesData.TypeId": 1,
+                }
+            },
+            {
+                $unwind: { path: "$DesignationData" }
+            }, {
+                $unwind: { path: "$CommitteeMemberData" }
+            },
+            {
+                $unwind: { path: "$CommitteeMemberTypesData" }
+            },
+            {
                 "$sort": {
                     "DesignationData.DesignationId": 1
                 }
             },
-            {
-                $match: query
-            }, {
-                $unwind: { path: "$DesignationData" }
-            }, {
-                $unwind: { path: "$CommitteeMemberData" }
-            }
+            { $match: query }
         ]).exec(function (err, data) {
             if (err)
                 res.send(err);

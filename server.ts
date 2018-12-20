@@ -22,6 +22,7 @@
     advertisementPhoto = require('./api/models/AdvertisementPhotos'),
     bannerManagement = require('./api/models/BannerManagementModel'),
     bannerPhoto = require('./api/models/BannerPhotos'),
+    committeMemberType = require('./api/models/CommitteMemberType'),
 	bodyParser = require('body-parser'),
 	jwt = require('jsonwebtoken'),
 	config = require('./Config'),
