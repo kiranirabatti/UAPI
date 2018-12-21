@@ -46,6 +46,14 @@ exports.createBanner = function (req, res) {
                 var base64Data = req.body.imageFile.replace(/^data:image\/\w+;base64,/, "");
                 fs.writeFile((dir + "/" + guid + '.' + extension), base64Data, 'base64', function (err) {
                     console.log(err);
+
+                    //var fileLocation = './Photos/Banners/' + newBanner.BannerId + '/' + guid + '.' + extension;
+                    //if (fs.existsSync(fileLocation)) {
+                    //    console.log("success")
+                    //    //  res.sendFile(path.resolve(fileLocation));
+                    //} else {
+                    //    console.log("Fail")
+                    //}
                 });
                 if (err)
                     res.send(err);

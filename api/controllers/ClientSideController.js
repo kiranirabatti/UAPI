@@ -186,6 +186,9 @@ exports.getFamilyMemberImage = function (req, res) {
     if (fs.existsSync(FileLocation)) {
         res.sendFile(path.resolve(FileLocation));
     }
+    else {
+        res.sendFile(path.resolve('./Photos/profile-picture.png'));
+    }
 };
 exports.updateFamilyMemberProfile = function (req, res) {
     var date = new Date, GUID = randomNum.randomBytes(16).toString("hex"), extension = req.body.Filename.slice((req.body.Filename.lastIndexOf(".") - 1 >>> 0) + 2), flag = false;
@@ -237,6 +240,9 @@ exports.sendMemberPhoto = function (req, res) {
     if (fs.existsSync(fileLocation)) {
         res.sendFile(path.resolve(fileLocation));
     }
+    else {
+        res.sendFile(path.resolve('./Photos/profile-picture.png'));
+    }
 };
 exports.getAllCities = function (req, res) {
     city.find({}, function (err, data) {
@@ -275,7 +281,7 @@ exports.getAllNativePlaces = function (req, res) {
 };
 exports.getAllMatrimonialMembers = function (req, res) {
     familyMember.aggregate([
-        { $match: { "LookingForPartner": "Yes" } },
+        { $match: { "LookingForPartner": "Yes", "MaritalStatus": { "$ne": "married" || "Married" } } },
         {
             $lookup: {
                 from: 'Height',

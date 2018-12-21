@@ -228,6 +228,9 @@ exports.getFamilyMemberImage = function (req, res) {
     if (fs.existsSync(FileLocation)) {
         res.sendFile(path.resolve(FileLocation));
     }
+    else {
+        res.sendFile(path.resolve('./Photos/profile-picture.png'));
+    }
 };
 
 exports.updateFamilyMemberProfile = function (req, res) {
@@ -286,6 +289,9 @@ exports.sendMemberPhoto = function (req, res) {
     if (fs.existsSync(fileLocation)) {
         res.sendFile(path.resolve(fileLocation));
     }
+    else {
+        res.sendFile(path.resolve('./Photos/profile-picture.png'));
+    }
 };
 
 exports.getAllCities = function (req, res) {
@@ -330,7 +336,7 @@ exports.getAllNativePlaces = function (req, res) {
 
 exports.getAllMatrimonialMembers = function (req, res) {
     familyMember.aggregate([
-        { $match: { "LookingForPartner": "Yes" } },
+        { $match: { "LookingForPartner": "Yes", "MaritalStatus": { "$ne": "married" || "Married" }} },
         {
             $lookup:
             {
