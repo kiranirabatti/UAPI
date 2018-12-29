@@ -143,7 +143,7 @@ exports.searchMember = function (req, res) {
     member.aggregate([
         {
             $match: query
-        }, 
+        },
         { $project: { 'MemberId': 1, 'FullName': 1, 'FatherName': 1, 'GrandFatherName': 1, 'Gol': 1, 'MulVatan': 1, 'IsActive': 1, 'FileNameInFolder': 1,'FileName':1 } },
     ]).exec(function (err, data) {
         if (err)
@@ -336,7 +336,7 @@ exports.getAllNativePlaces = function (req, res) {
 
 exports.getAllMatrimonialMembers = function (req, res) {
     familyMember.aggregate([
-        { $match: { "LookingForPartner": "Yes", "MaritalStatus": { "$ne": "married" || "Married" }} },
+        { $match: { "LookingForPartner": "Yes", "MaritalStatus": { "$ne": "married" || "Married" } } },
         {
             $lookup:
             {
@@ -389,12 +389,14 @@ exports.getAllMatrimonialMembers = function (req, res) {
                 Name: '$Name',
                 HeightData: '$HeightData',
                 Age: '$Age',
-                Gender:'$Gender',
+                Gender: '$Gender',
                 CityData: '$CityData',
+                NativeData: '$NativeData',
+                EducationData:'$EducationData',
                 CitizenshipData: '$CitizenshipData',
                 FileNameInFolder: '$FileNameInFolder',
                 LookingForPartner: '$LookingForPartner',
-                MaritalStatus:'$MaritalStatus'
+                MaritalStatus: '$MaritalStatus'
             }
         }
     ]).exec(function (err, data) {
@@ -538,7 +540,7 @@ exports.getMatrimonialResult = function (req, res) {
                 CitizenshipData: '$CitizenshipData',
                 CityData: '$CityData',
                 EducationData: '$EducationData',
-                NativeData:'$NativeData'
+                NativeData: '$NativeData'
             }
         }
     ]);
@@ -592,7 +594,7 @@ exports.getAllCommitteeMembers = function (req, res) {
         },
         {
             "$sort": {
-                 "CommitteeMemberTypesData.TypeId":1,
+                "CommitteeMemberTypesData.TypeId": 1,
             }
         }, {
             $unwind: { path: "$DesignationData" }
@@ -608,23 +610,6 @@ exports.getAllCommitteeMembers = function (req, res) {
 
             }
         },
-        //{
-        //    $project: {
-        //        CommitteeMemberId: '$CommitteeMemberId',
-        //        MemberId: '$CommitteeMemberData.MemberId ',
-        //        MemberType: '$MemberType',
-        //        CommitteeMemberDesignation: '$CommitteeMemberDesignation',
-        //        FullName: '$CommitteeMemberData.FullName',
-        //        Address: '$CommitteeMemberData.Address',
-        //        IsActive: '$CommitteeMemberData.IsActive',
-        //        FileNameInFolder: '$CommitteeMemberData.FileNameInFolder',
-        //        Taluka: '$CommitteeMemberData.Taluka',
-        //        Jeello: '$CommitteeMemberData.Jeello',
-        //        PinCode: '$CommitteeMemberData.PinCode',
-        //        Email: '$CommitteeMemberData.Email',
-        //        Designation:'$DesignationData.Designation'
-        //    }
-        //}
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
@@ -801,6 +786,7 @@ exports.checkMember = function (req, res) {
 };
 
 exports.joinBannersWithPhotos = function (req, res) {
+    var i = 0;
     bannerManagement.aggregate([
         {
             $lookup:
@@ -904,7 +890,7 @@ exports.upcomingEvent = function (req, res) {
         {
             $match: {
                 date: { $gte: currentDate },
-                IsActive:true
+                IsActive: true
             }
         },
         {

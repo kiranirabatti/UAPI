@@ -331,6 +331,8 @@ exports.getAllMatrimonialMembers = function (req, res) {
                 Age: '$Age',
                 Gender: '$Gender',
                 CityData: '$CityData',
+                NativeData: '$NativeData',
+                EducationData: '$EducationData',
                 CitizenshipData: '$CitizenshipData',
                 FileNameInFolder: '$FileNameInFolder',
                 LookingForPartner: '$LookingForPartner',
@@ -684,6 +686,7 @@ exports.checkMember = function (req, res) {
     });
 };
 exports.joinBannersWithPhotos = function (req, res) {
+    var i = 0;
     bannerManagement.aggregate([
         {
             $lookup: {
