@@ -594,7 +594,8 @@ exports.getAllCommitteeMembers = function (req, res) {
         },
         {
             "$sort": {
-                "CommitteeMemberTypesData.TypeId": 1,
+                "DesignationData.DesignationId": 1
+              //  "CommitteeMemberTypesData.TypeId": 1,
             }
         }, {
             $unwind: { path: "$DesignationData" }
@@ -606,7 +607,8 @@ exports.getAllCommitteeMembers = function (req, res) {
         },
         {
             "$sort": {
-                "DesignationData.DesignationId": 1
+                "CommitteeMemberTypesData.TypeId": 1,
+                //"DesignationData.DesignationId": 1
 
             }
         },
