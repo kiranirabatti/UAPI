@@ -29,12 +29,13 @@ exports.joinEventModelWithPhotos = function (req, res) {
             }
         },
         {
-            $sort: { date: 1 }
+            $sort: { date: -1 }
         }
     ]).exec(function (err, data) {
         if (err)
             res.send(err);
         res.json(data);
+        console.log(data);
     });
 };
 exports.getEventPhotos = function (req, res) {
